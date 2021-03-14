@@ -4,9 +4,10 @@ import net.debreczeni.food.delivery.dto.UserDTO;
 import net.debreczeni.food.delivery.exceptions.InvalidCredentialsException;
 import net.debreczeni.food.delivery.model.Administrator;
 import net.debreczeni.food.delivery.model.Customer;
+import net.debreczeni.food.delivery.model.HasID;
 import net.debreczeni.food.delivery.model.User;
-import net.debreczeni.food.delivery.util.OrderTypes;
 import net.debreczeni.food.delivery.util.Pair;
+import net.debreczeni.food.delivery.util.SQL;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,12 +18,18 @@ public class UserService extends AbstractService<UserDTO> {
         super("users");
     }
 
+    public <T extends HasID> T findByID(int id){
+        Class<?> cls = new T();
+        if(UserDTO.class.isAssignableFrom(T))
+        return fromDTO(super.findById(id));
+    }
+
     public User login(String username, String password) throws InvalidCredentialsException {
         List<Pair<String, Object>> rules = new LinkedList<>();
         rules.add(new Pair<>("username", username));
         rules.add(new Pair<>("password", password));
 
-        List<UserDTO> response = this.select(rules, OrderTypes.ASC);
+        List<UserDTO> response = this.select(rules, SQL.ORDER_TYPE.ASC);
         if (response != null && !response.isEmpty()) {
             return fromDTO(response.get(0));
         }
@@ -30,8 +37,8 @@ public class UserService extends AbstractService<UserDTO> {
         throw new InvalidCredentialsException();
     }
 
-    private UserDTO toDTO(User user){
-        if(user instanceof Administrator){
+    private UserDTO toDTO(User user) {
+        if (user instanceof Administrator) {
             Administrator administrator = (Administrator) user;
             return UserDTO.builder()
                     .id(administrator.getId())
@@ -42,7 +49,7 @@ public class UserService extends AbstractService<UserDTO> {
                     .build();
         }
 
-        if(user instanceof Customer){
+        if (user instanceof Customer) {
             Customer customer = (Customer) user;
             return UserDTO.builder()
                     .id(customer.getId())
@@ -60,8 +67,8 @@ public class UserService extends AbstractService<UserDTO> {
         throw new IllegalArgumentException("User type not found");
     }
 
-    private User fromDTO(UserDTO user){
-        if(user.getIs_admin()){
+    private User fromDTO(UserDTO user) {
+        if (user.getIs_admin()) {
             return new Administrator(
                     user.getId(),
                     user.getName(),

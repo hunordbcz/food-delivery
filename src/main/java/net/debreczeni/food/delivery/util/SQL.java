@@ -8,6 +8,7 @@ import java.util.List;
  * @param <T> Defines the current Type
  */
 public class SQL<T> {
+
     private final List<String> fieldNames;
     private final String tableName;
 
@@ -18,6 +19,7 @@ public class SQL<T> {
 
     /**
      * Create the WHERE part of an SQL query
+     *
      * @param fields The reference fields that should be added
      * @return The WHERE part as a String
      */
@@ -37,6 +39,7 @@ public class SQL<T> {
 
     /**
      * Create a SELECT query
+     *
      * @param reference The reference fields that should be used in the filter ( WHERE )
      * @return The SELECT query as a String
      */
@@ -48,6 +51,7 @@ public class SQL<T> {
 
     /**
      * Create an INSERT query
+     *
      * @param t The object that should be inserted
      * @return The INSERT query for the object as a String
      */
@@ -123,5 +127,13 @@ public class SQL<T> {
      */
     public String createDescSelectQuery(List<String> reference) {
         return this.createSelectQuery(reference) + " ORDER BY id DESC";
+    }
+
+    public enum ORDER_TYPE {
+        ASC, DESC
+    }
+
+    public enum STATEMENT_TYPE {
+        SELECT, INSERT, UPDATE, DELETE, ALTER
     }
 }

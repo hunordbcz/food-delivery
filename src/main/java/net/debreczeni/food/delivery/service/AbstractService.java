@@ -1,6 +1,8 @@
 package net.debreczeni.food.delivery.service;
 
-import net.debreczeni.food.delivery.util.*;
+import net.debreczeni.food.delivery.util.ConnectionFactory;
+import net.debreczeni.food.delivery.util.Pair;
+import net.debreczeni.food.delivery.util.SQL;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -18,8 +20,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static net.debreczeni.food.delivery.util.OrderTypes.ASC;
-import static net.debreczeni.food.delivery.util.OrderTypes.DESC;
+import static net.debreczeni.food.delivery.util.SQL.ORDER_TYPE.ASC;
+import static net.debreczeni.food.delivery.util.SQL.ORDER_TYPE.DESC;
+
 
 /**
  * Used to make the connection between the DB and Application
@@ -66,14 +69,14 @@ class AbstractService<T> {
      * @param sqlType The type of query that will be ran afterwards
      * @return List of Objects that contain the values of the fields
      */
-    private List<Object> getFieldValues(T t, StatementTypes sqlType) throws IllegalAccessException {
+    private List<Object> getFieldValues(T t, SQL.STATEMENT_TYPE sqlType) throws IllegalAccessException {
         List<Object> fieldValues = new LinkedList<>();
         for (Field field : type.getDeclaredFields()) {
             if (field.getName().startsWith("x_")) {
                 continue;
             }
 
-            if (sqlType == StatementTypes.INSERT && field.getName().equals("id")) {
+            if (sqlType == SQL.STATEMENT_TYPE.INSERT && field.getName().equals("id")) {
                 continue;
             }
 
@@ -165,7 +168,7 @@ class AbstractService<T> {
      * @param order Ascending or Descending
      * @return List of parsed objects from the result of the query
      */
-    protected List<T> select(List<Pair<String, Object>> rules, OrderTypes order) {
+    protected List<T> select(List<Pair<String, Object>> rules, SQL.ORDER_TYPE order) {
         List<String> fields = new LinkedList<>();
         List<Object> values = new LinkedList<>();
 
@@ -196,7 +199,7 @@ class AbstractService<T> {
     protected Boolean insert(T t) {
         List<Object> values = null;
         try {
-            values = getFieldValues(t, StatementTypes.INSERT);
+            values = getFieldValues(t, SQL.STATEMENT_TYPE.INSERT);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -213,7 +216,7 @@ class AbstractService<T> {
     protected Boolean update(T t) {
         List<Object> referenceValues = null;
         try {
-            referenceValues = getFieldValues(t, StatementTypes.UPDATE);
+            referenceValues = getFieldValues(t, SQL.STATEMENT_TYPE.UPDATE);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -284,6 +287,8 @@ class AbstractService<T> {
         }
         return null;
     }
+
+
 
     /**
      * Creates objects from the result of a query that was made

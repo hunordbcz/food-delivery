@@ -18,7 +18,7 @@ public class ConnectionFactory {
     private static final String USER = "root";
     private static final String PASS = "";
 
-    private static ConnectionFactory singleInstance = new ConnectionFactory();
+    private static final ConnectionFactory singleInstance = new ConnectionFactory();
 
     private ConnectionFactory() {
         try {

@@ -1,15 +1,26 @@
 package net.debreczeni.food.delivery.model;
 
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Cart implements HasID{
-    private int id;
-    private User user;
+@Getter
+public final class Cart extends HasID {
+    private final User user;
     private final List<Item> items = new ArrayList<>();
-    private String deliveryAddress;
-    private String paymentType;
-    private boolean isProcessed;
-    private Date createdAt;
+    private final String deliveryAddress;
+    private final Integer paymentType;
+    private final Boolean isProcessed;
+    private final Date createdAt;
+
+    public Cart(Integer id, User user, String deliveryAddress, Integer paymentType, Boolean isProcessed, Date createdAt) {
+        super(id);
+        this.user = user;
+        this.deliveryAddress = deliveryAddress;
+        this.paymentType = paymentType;
+        this.isProcessed = isProcessed;
+        this.createdAt = createdAt;
+    }
 }

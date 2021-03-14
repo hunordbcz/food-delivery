@@ -1,11 +1,9 @@
 package net.debreczeni.food.delivery.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-public class Customer extends User{
+public final class Customer extends User {
     private final String nrIdentity;
     private final Integer cnp;
     private final String address;
