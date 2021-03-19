@@ -1,8 +1,7 @@
-package net.debreczeni.food.delivery.service;
+package net.debreczeni.food.delivery.repository;
 
 import net.debreczeni.food.delivery.util.ConnectionFactory;
 import net.debreczeni.food.delivery.util.Pair;
-import net.debreczeni.food.delivery.util.SQL;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -15,13 +14,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import static net.debreczeni.food.delivery.util.SQL.ORDER_TYPE.ASC;
-import static net.debreczeni.food.delivery.util.SQL.ORDER_TYPE.DESC;
+import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.ASC;
+import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.DESC;
 
 
 /**
@@ -29,19 +30,17 @@ import static net.debreczeni.food.delivery.util.SQL.ORDER_TYPE.DESC;
  *
  * @param <T> Defines the current type
  */
-abstract class AbstractService<T> {
-    protected static final Logger LOGGER = Logger.getLogger(AbstractService.class.getName());
+abstract class AbstractRepository<T> {
+    protected static final Logger LOGGER = Logger.getLogger(AbstractRepository.class.getName());
 
     private final List<String> fieldNames;
     private final Class<T> type;
     private final SQL<T> queries;
-    protected Object previous;
 
     @SuppressWarnings("unchecked")
-    protected AbstractService(String tableName) {
+    protected AbstractRepository(String tableName) {
         this.type = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
         this.fieldNames = getDeclaredFields();
-        this.previous = null;
         this.queries = new SQL<>(tableName, fieldNames);
     }
 
@@ -51,15 +50,7 @@ abstract class AbstractService<T> {
      * @return List of Strings that contains the names
      */
     private List<String> getDeclaredFields() {
-        List<String> fields = new LinkedList<>();
-        for (Field field : type.getDeclaredFields()) {
-            String name = field.getName();
-            if (!name.startsWith("x_")) {
-                fields.add(name);
-            }
-        }
-
-        return fields;
+        return Arrays.stream(type.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
     }
 
     /**
@@ -72,15 +63,11 @@ abstract class AbstractService<T> {
     private List<Object> getFieldValues(T t, SQL.STATEMENT_TYPE sqlType) throws IllegalAccessException {
         List<Object> fieldValues = new LinkedList<>();
         for (Field field : type.getDeclaredFields()) {
-            if (field.getName().startsWith("x_")) {
-                continue;
-            }
-
             if (sqlType == SQL.STATEMENT_TYPE.INSERT && field.getName().equals("id")) {
                 continue;
             }
 
-            PropertyDescriptor propertyDescriptor = null;
+            PropertyDescriptor propertyDescriptor;
             try {
                 propertyDescriptor = new PropertyDescriptor(field.getName(), type);
                 Method method = propertyDescriptor.getReadMethod();
@@ -100,7 +87,7 @@ abstract class AbstractService<T> {
      * @param values The values that are added to the query
      * @return The number of rows changed / added
      */
-    private Integer sendUpdate(String query, List<Object> values) {
+    private synchronized Integer sendUpdate(String query, List<Object> values) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -117,9 +104,8 @@ abstract class AbstractService<T> {
 
             return statement.executeUpdate();
         } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, type.getName() + "DAO:sendUpdate " + e.getMessage());
+            LOGGER.log(Level.WARNING, type.getName() + "::sendUpdate " + e.getMessage());
         } finally {
-            ConnectionFactory.close(resultSet);
             ConnectionFactory.close(statement);
             ConnectionFactory.close(connection);
         }
@@ -133,11 +119,10 @@ abstract class AbstractService<T> {
      * @param values The values that are added to the query
      * @return List of parsed objects from the result of the query
      */
-    private List<T> sendQuery(String query, List<Object> values) {
+    private synchronized List<T> sendQuery(String query, List<Object> values) {
         Connection connection = null;
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-
         try {
             connection = ConnectionFactory.getConnection();
             statement = connection.prepareStatement(query);
@@ -152,7 +137,7 @@ abstract class AbstractService<T> {
 
             return createObjects(resultSet);
         } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, type.getName() + "DAO:sendQuery " + e.getMessage());
+            LOGGER.log(Level.WARNING, type.getName() + "::sendQuery " + e.getMessage());
         } finally {
             ConnectionFactory.close(resultSet);
             ConnectionFactory.close(statement);
@@ -168,7 +153,7 @@ abstract class AbstractService<T> {
      * @param order Ascending or Descending
      * @return List of parsed objects from the result of the query
      */
-    protected List<T> select(List<Pair<String, Object>> rules, SQL.ORDER_TYPE order) {
+    public List<T> select(List<Pair<String, Object>> rules, SQL.ORDER_TYPE order) {
         List<String> fields = new LinkedList<>();
         List<Object> values = new LinkedList<>();
 
@@ -180,7 +165,6 @@ abstract class AbstractService<T> {
         }
 
         String query = null;
-
         if (order == DESC) {
             query = queries.createDescSelectQuery(fields);
         } else {
@@ -196,7 +180,7 @@ abstract class AbstractService<T> {
      * @param t The object whose values will be inserted in the DB
      * @return True on success | False on failure
      */
-    protected Boolean insert(T t) {
+    public Boolean insert(T t) {
         List<Object> values = null;
         try {
             values = getFieldValues(t, SQL.STATEMENT_TYPE.INSERT);
@@ -213,7 +197,7 @@ abstract class AbstractService<T> {
      * @param t The object whose values will be updated in the DB
      * @return True on success | False on failure
      */
-    protected Boolean update(T t) {
+    public Boolean update(T t) {
         List<Object> referenceValues = null;
         try {
             referenceValues = getFieldValues(t, SQL.STATEMENT_TYPE.UPDATE);
@@ -239,7 +223,7 @@ abstract class AbstractService<T> {
      * @param rules List of Pairs of String and Object, that is used to filter the data
      * @return True on success | False on failure
      */
-    protected Boolean delete(List<Pair<String, Object>> rules) {
+    public Boolean delete(List<Pair<String, Object>> rules) {
         List<String> fields = new LinkedList<>();
         List<Object> values = new LinkedList<>();
 
@@ -260,14 +244,14 @@ abstract class AbstractService<T> {
     /**
      * @return The last element of current type in the DB
      */
-    protected T findLast() {
+    public T findLast() {
         return this.select(null, DESC).get(0);
     }
 
     /**
      * @return All the elements of current type in the DB
      */
-    protected List<T> findAll() {
+    public List<T> findAll() {
         return this.select(null, ASC);
     }
 
@@ -277,7 +261,7 @@ abstract class AbstractService<T> {
      * @param id The given id to search for
      * @return The object if found | NULL if no element was found
      */
-    protected T findByID(int id) {
+    public T findByID(int id) {
         List<Pair<String, Object>> rules = new LinkedList<>();
         rules.add(new Pair<>("id", id));
 
