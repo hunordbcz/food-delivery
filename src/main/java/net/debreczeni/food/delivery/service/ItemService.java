@@ -2,9 +2,16 @@ package net.debreczeni.food.delivery.service;
 
 import net.debreczeni.food.delivery.dto.ItemDTO;
 import net.debreczeni.food.delivery.model.Item;
+import net.debreczeni.food.delivery.repository.ItemRepository;
+
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class ItemService {
-    private ItemService() {
+    private ItemRepository itemRepository = new ItemRepository();
+
+    public ItemService() {
     }
 
     public static ItemService getInstance() {
@@ -25,6 +32,10 @@ public class ItemService {
                 itemDTO.getName(),
                 itemDTO.getPrice()
         );
+    }
+
+    public List<Item> getAll() {
+        return itemRepository.findAll().stream().map(ItemService::fromDTO).collect(Collectors.toList());
     }
 
     private static class Singleton {

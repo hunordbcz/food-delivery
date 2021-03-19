@@ -2,6 +2,7 @@ package net.debreczeni.food.delivery.presentation;
 
 import net.debreczeni.food.delivery.bll.UserBLL;
 import net.debreczeni.food.delivery.exceptions.InvalidCredentialsException;
+import net.debreczeni.food.delivery.model.Administrator;
 import net.debreczeni.food.delivery.model.User;
 
 import javax.swing.*;
@@ -28,6 +29,11 @@ public class LoginFrame extends JFrame {
         enterButton.addActionListener(e -> {
             try {
                 final User user = userBLL.login(usernameField.getText(),passwordField.getText());
+
+                if(user instanceof Administrator){
+                    final CustomerFrame customerFrame = new CustomerFrame(this);
+                    customerFrame.setVisible(true);
+                }
 
                 //Successful login
                 final JFrame homepage = userBLL.getHomepage(user).apply(this);

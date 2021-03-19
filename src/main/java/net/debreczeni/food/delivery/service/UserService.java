@@ -10,6 +10,7 @@ import net.debreczeni.food.delivery.util.Pair;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserService {
     private final UserRepository userRepository = new UserRepository();
@@ -20,6 +21,10 @@ public class UserService {
 
     public User findByID(int id) {
         return fromDTO(userRepository.findByID(id));
+    }
+
+    public List<User> getAll(){
+        return userRepository.findAll().stream().map(this::fromDTO).collect(Collectors.toList());
     }
 
     public User findByUsernameAndPassword(String username, String password){
@@ -89,6 +94,13 @@ public class UserService {
                 user.getAddress(),
                 user.getIs_loyal()
         );
+    }
+
+    public void update(User user) {
+        if(user.getId() == null){
+            throw new UnsupportedOperationException("Can't update object without primary key");
+        }
+        userRepository.update(toDTO(user));
     }
 
     private static class Singleton {

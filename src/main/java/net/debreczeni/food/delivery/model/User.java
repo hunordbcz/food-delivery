@@ -2,13 +2,15 @@ package net.debreczeni.food.delivery.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 public abstract class User extends HasID {
-    protected final String name;
-    protected final String username;
-    protected final String password;
+    protected String name;
+    protected String username;
+    protected String password;
 
     public User(Integer id, String name, String username, String password) {
         super(id);

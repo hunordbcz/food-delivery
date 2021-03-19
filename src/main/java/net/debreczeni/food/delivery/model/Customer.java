@@ -1,13 +1,15 @@
 package net.debreczeni.food.delivery.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 public final class Customer extends User {
-    private final String nrIdentity;
-    private final Integer cnp;
-    private final String address;
-    private final Boolean isLoyal;
+    private String nrIdentity;
+    private Integer cnp;
+    private String address;
+    private Boolean isLoyal;
 
     public Customer(Integer id, String name, String username, String password, String nrIdentity, Integer cnp, String address, Boolean isLoyal) {
         super(id, name, username, password);

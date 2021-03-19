@@ -206,11 +206,10 @@ abstract class AbstractRepository<T> {
         }
         List<String> referenceNames = new LinkedList<>();
 
-        referenceNames.add(fieldNames.get(1));
-
+        referenceNames.add(fieldNames.get(0));
 
         assert referenceValues != null;
-        referenceValues.add(referenceValues.get(1));
+        referenceValues.add(referenceValues.get(0));
 
 
         String query = queries.createUpdateQuery(t, referenceNames);
@@ -290,8 +289,10 @@ abstract class AbstractRepository<T> {
                     Object value = resultSet.getObject(fieldName);
                     PropertyDescriptor propertyDescriptor = new PropertyDescriptor(fieldName, type);
 
-                    method = type.getMethod(propertyDescriptor.getWriteMethod().getName(), value.getClass());
-                    method.invoke(instance, value);
+                    if(value != null){
+                        method = type.getMethod(propertyDescriptor.getWriteMethod().getName(), value.getClass());
+                        method.invoke(instance, value);
+                    }
                 }
                 list.add(instance);
             }

@@ -12,4 +12,9 @@ public final class Item extends HasID {
         this.name = name;
         this.price = price;
     }
+
+    public Item(String name, Integer price) {
+        this.name = name;
+        this.price = price;
+    }
 }

@@ -11,7 +11,7 @@
       <tabbedpane id="9d152" binding="tabbedPane">
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="200" height="200"/>
+            <preferred-size width="800" height="500"/>
           </grid>
         </constraints>
         <properties/>
@@ -32,7 +32,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="6e5e0" class="javax.swing.JTable" binding="customerTable">
+              <component id="ac227" class="javax.swing.JTable" binding="customerTable">
                 <constraints/>
                 <properties/>
               </component>
