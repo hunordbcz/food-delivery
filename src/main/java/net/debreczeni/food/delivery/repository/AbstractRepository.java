@@ -29,7 +29,7 @@ import static net.debreczeni.food.delivery.util.SQL.ORDER_TYPE.DESC;
  *
  * @param <T> Defines the current type
  */
-class AbstractService<T> {
+abstract class AbstractService<T> {
     protected static final Logger LOGGER = Logger.getLogger(AbstractService.class.getName());
 
     private final List<String> fieldNames;
@@ -277,7 +277,7 @@ class AbstractService<T> {
      * @param id The given id to search for
      * @return The object if found | NULL if no element was found
      */
-    protected T findById(int id) {
+    protected T findByID(int id) {
         List<Pair<String, Object>> rules = new LinkedList<>();
         rules.add(new Pair<>("id", id));
 
