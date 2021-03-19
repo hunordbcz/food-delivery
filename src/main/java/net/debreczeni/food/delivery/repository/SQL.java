@@ -1,4 +1,4 @@
-package net.debreczeni.food.delivery.util;
+package net.debreczeni.food.delivery.repository;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @param <T> Defines the current Type
  */
-public class SQL<T> {
+public final class SQL<T> {
 
     private final List<String> fieldNames;
     private final String tableName;

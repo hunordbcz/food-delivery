@@ -1,8 +1,10 @@
 package net.debreczeni.food.delivery.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public abstract class User extends HasID {
     protected final String name;
     protected final String username;

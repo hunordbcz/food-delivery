@@ -11,11 +11,11 @@ public final class Cart extends HasID {
     private final User user;
     private final List<Item> items = new ArrayList<>();
     private final String deliveryAddress;
-    private final Integer paymentType;
+    private final PaymentType paymentType;
     private final Boolean isProcessed;
     private final Date createdAt;
 
-    public Cart(Integer id, User user, String deliveryAddress, Integer paymentType, Boolean isProcessed, Date createdAt) {
+    public Cart(Integer id, User user, String deliveryAddress, PaymentType paymentType, Boolean isProcessed, Date createdAt) {
         super(id);
         this.user = user;
         this.deliveryAddress = deliveryAddress;

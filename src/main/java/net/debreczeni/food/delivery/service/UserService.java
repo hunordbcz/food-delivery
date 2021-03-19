@@ -1,40 +1,42 @@
 package net.debreczeni.food.delivery.service;
 
 import net.debreczeni.food.delivery.dto.UserDTO;
-import net.debreczeni.food.delivery.exceptions.InvalidCredentialsException;
 import net.debreczeni.food.delivery.model.Administrator;
 import net.debreczeni.food.delivery.model.Customer;
-import net.debreczeni.food.delivery.model.HasID;
 import net.debreczeni.food.delivery.model.User;
+import net.debreczeni.food.delivery.repository.SQL;
+import net.debreczeni.food.delivery.repository.UserRepository;
 import net.debreczeni.food.delivery.util.Pair;
-import net.debreczeni.food.delivery.util.SQL;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class UserService extends AbstractService<UserDTO> {
+public class UserService {
+    private final UserRepository userRepository = new UserRepository();
 
-    public UserService() {
-        super("users");
+    public static UserService getInstance() {
+        return Singleton.INSTANCE;
     }
 
-    public <T extends HasID> T findByID(int id){
-        Class<?> cls = new T();
-        if(UserDTO.class.isAssignableFrom(T))
-        return fromDTO(super.findById(id));
+    public User findByID(int id) {
+        return fromDTO(userRepository.findByID(id));
     }
 
-    public User login(String username, String password) throws InvalidCredentialsException {
-        List<Pair<String, Object>> rules = new LinkedList<>();
+    public User findByUsernameAndPassword(String username, String password){
+        final List<Pair<String, Object>> rules = new LinkedList<>();
         rules.add(new Pair<>("username", username));
         rules.add(new Pair<>("password", password));
 
-        List<UserDTO> response = this.select(rules, SQL.ORDER_TYPE.ASC);
+        final List<UserDTO> response = userRepository.select(rules, SQL.ORDER_TYPE.ASC);
         if (response != null && !response.isEmpty()) {
             return fromDTO(response.get(0));
         }
 
-        throw new InvalidCredentialsException();
+        return null;
+    }
+
+    public boolean insert(User user){
+        return userRepository.insert(toDTO(user));
     }
 
     private UserDTO toDTO(User user) {
@@ -87,6 +89,10 @@ public class UserService extends AbstractService<UserDTO> {
                 user.getAddress(),
                 user.getIs_loyal()
         );
+    }
+
+    private static class Singleton {
+        private static final UserService INSTANCE = new UserService();
     }
 
 }
