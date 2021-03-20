@@ -1,5 +1,6 @@
 package net.debreczeni.food.delivery.presentation.tables;
 
+import net.debreczeni.food.delivery.bll.UserBLL;
 import net.debreczeni.food.delivery.model.Administrator;
 import net.debreczeni.food.delivery.model.Customer;
 import net.debreczeni.food.delivery.model.User;
@@ -10,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class CustomerTableModel extends AbstractTableModel {
+public class UserTableModel extends AbstractTableModel {
     private final static int ID = 0;
     private final static int NAME = 1;
     private final static int USERNAME = 2;
@@ -20,13 +21,14 @@ public class CustomerTableModel extends AbstractTableModel {
     private final static int IS_LOYAL = 6;
     private final static int IS_ADMIN = 7;
     private List<User> users;
-    private final UserService userService = new UserService();
-    public CustomerTableModel() {
-        users = userService.getAll();
+    private final UserBLL userBLL = new UserBLL();
+
+    public UserTableModel() {
+        refresh();
     }
 
-    public void refreshTable() {
-        users = userService.getAll();
+    public void refresh() {
+        users = userBLL.getAll();
         fireTableDataChanged();
     }
 
@@ -127,7 +129,7 @@ public class CustomerTableModel extends AbstractTableModel {
             }
         }
 
-        userService.update(user);
+        userBLL.update(user);
     }
 
     @Override
@@ -190,5 +192,10 @@ public class CustomerTableModel extends AbstractTableModel {
             default:
                 return String.class;
         }
+    }
+
+    public void deleteUser(int nrIndex) {
+        userBLL.delete(users.get(nrIndex));
+        refresh();
     }
 }

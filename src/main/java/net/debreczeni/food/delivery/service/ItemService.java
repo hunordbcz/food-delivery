@@ -38,6 +38,18 @@ public class ItemService {
         return itemRepository.findAll().stream().map(ItemService::fromDTO).collect(Collectors.toList());
     }
 
+    public void update(Item item) {
+        itemRepository.update(toDTO(item));
+    }
+
+    public void insert(Item item) {
+        itemRepository.insert(toDTO(item));
+    }
+
+    public void delete(Item item) {
+        itemRepository.delete(toDTO(item));
+    }
+
     private static class Singleton {
         private static final ItemService INSTANCE = new ItemService();
     }

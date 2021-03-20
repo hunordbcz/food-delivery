@@ -103,6 +103,10 @@ public class UserService {
         userRepository.update(toDTO(user));
     }
 
+    public void delete(User user) {
+        userRepository.delete(toDTO(user));
+    }
+
     private static class Singleton {
         private static final UserService INSTANCE = new UserService();
     }

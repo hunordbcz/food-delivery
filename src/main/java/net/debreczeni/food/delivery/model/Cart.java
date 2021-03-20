@@ -25,7 +25,7 @@ public final class Cart {
         return items.get(index);
     }
 
-    public Integer getTotal() {
-        return items.stream().map(Item::getPrice).reduce(0, Integer::sum);
-    }
+//    public Integer getTotal() {
+//        return items.stream().map(Item::getPrice).reduce(0, Integer::sum);
+//    }
 }

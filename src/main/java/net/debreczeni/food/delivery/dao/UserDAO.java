@@ -5,6 +5,8 @@ import net.debreczeni.food.delivery.model.Customer;
 import net.debreczeni.food.delivery.model.User;
 import net.debreczeni.food.delivery.service.UserService;
 
+import java.util.List;
+
 public class UserDAO {
     private final UserService userService;
 
@@ -28,5 +30,17 @@ public class UserDAO {
         }
 
         return user;
+    }
+
+    public List<User> getAll() {
+        return userService.getAll();
+    }
+
+    public void update(User user) {
+        userService.update(user);
+    }
+
+    public void delete(User user) {
+        userService.delete(user);
     }
 }

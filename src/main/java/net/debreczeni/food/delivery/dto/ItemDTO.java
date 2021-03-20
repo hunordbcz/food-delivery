@@ -10,5 +10,5 @@ import lombok.*;
 public class ItemDTO {
     private Integer id;
     private String name;
-    private Integer price;
+    private Double price;
 }

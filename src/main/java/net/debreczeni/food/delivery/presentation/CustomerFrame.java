@@ -55,7 +55,7 @@ public class CustomerFrame extends JFrame {
             removeButton.setEnabled(false);
         });
 
-        itemTableModel = new ItemTableModel(itemService.getAll());
+        itemTableModel = new ItemTableModel();
         itemsTable.setModel(itemTableModel);
         final ListSelectionModel itemsTableSelection = itemsTable.getSelectionModel();
         itemsTableSelection.addListSelectionListener(e -> {

@@ -97,6 +97,10 @@ public final class SQL<T> {
         sb.append(tableName);
         sb.append(" SET ");
         for (int i = 0; i < this.fieldNames.size(); i++) {
+            final String fieldName = fieldNames.get(i);
+            if(fieldName.equals("id")){
+                continue;
+            }
             sb.append(fieldNames.get(i)).append(" = ?");
             if (i != this.fieldNames.size() - 1) {
                 sb.append(",");

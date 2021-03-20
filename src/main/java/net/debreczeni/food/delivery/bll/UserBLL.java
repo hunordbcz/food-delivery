@@ -8,6 +8,7 @@ import net.debreczeni.food.delivery.presentation.AdminFrame;
 import net.debreczeni.food.delivery.presentation.CustomerFrame;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.function.Function;
 
 public class UserBLL {
@@ -31,5 +32,17 @@ public class UserBLL {
         } else {
             return CustomerFrame::new;
         }
+    }
+
+    public List<User> getAll() {
+        return userDAO.getAll();
+    }
+
+    public void update(User user) {
+        userDAO.update(user);
+    }
+
+    public void delete(User user) {
+        userDAO.delete(user);
     }
 }

@@ -1,22 +1,27 @@
 package net.debreczeni.food.delivery.presentation.tables;
 
+import net.debreczeni.food.delivery.bll.ItemBLL;
 import net.debreczeni.food.delivery.model.Item;
+import net.debreczeni.food.delivery.service.ItemService;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.LinkedList;
 import java.util.List;
 
 public class ItemTableModel extends AbstractTableModel {
-    private static final int NAME = 0;
-    private static final int PRICE = 1;
-    private final List<Item> items;
+    protected final ItemBLL itemBLL = new ItemBLL();
 
-    public ItemTableModel(List<Item> items) {
-        this.items = items;
-    }
+    protected static final int NAME = 0;
+    protected static final int PRICE = 1;
+    protected List<Item> items;
 
     public ItemTableModel() {
-        this(new LinkedList<>());
+        refresh();
+    }
+
+    public void refresh(){
+        items = itemBLL.getAll();
+        fireTableDataChanged();
     }
 
     public void addItem(Item item) {
@@ -25,8 +30,8 @@ public class ItemTableModel extends AbstractTableModel {
         fireTableDataChanged();
     }
 
-    public Integer getTotal() {
-        return items.stream().map(Item::getPrice).reduce(0, Integer::sum);
+    public Double getTotal() {
+        return items.stream().map(Item::getPrice).reduce(0D, Double::sum);
     }
 
     @Override
@@ -76,7 +81,7 @@ public class ItemTableModel extends AbstractTableModel {
             case NAME:
                 return String.class;
             case PRICE:
-                return Integer.class;
+                return Double.class;
             default:
                 return null;
         }

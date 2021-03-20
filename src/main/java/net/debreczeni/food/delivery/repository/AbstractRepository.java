@@ -13,10 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -204,15 +201,24 @@ abstract class AbstractRepository<T> {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        List<String> referenceNames = new LinkedList<>();
-
-        referenceNames.add(fieldNames.get(0));
-
         assert referenceValues != null;
         referenceValues.add(referenceValues.get(0));
+        referenceValues.remove(referenceValues.get(0));
 
 
-        String query = queries.createUpdateQuery(t, referenceNames);
+        String query = queries.createUpdateQuery(t, Collections.singletonList("id"));
+        return sendUpdate(query, referenceValues) != 0;
+    }
+
+    public Boolean delete(T t){
+        List<Object> referenceValues = null;
+        try {
+            referenceValues = getFieldValues(t, SQL.STATEMENT_TYPE.DELETE);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+        String query = queries.createDeleteQuery(fieldNames);
         return sendUpdate(query, referenceValues) != 0;
     }
 
