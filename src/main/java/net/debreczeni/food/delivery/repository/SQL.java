@@ -37,6 +37,20 @@ public final class SQL<T> {
         return sb.toString();
     }
 
+    private String getWHEREBigger(List<String> fields) {
+        if (fields == null || fields.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder(" WHERE ");
+        fields.stream()
+                .limit(fields.size() - 1)
+                .forEach(field -> sb.append(field).append(" >= ? AND "));
+        sb.append(fields.get(fields.size() - 1)).append(" >= ?");
+
+        return sb.toString();
+    }
+
     /**
      * Create a SELECT query
      *
@@ -47,6 +61,18 @@ public final class SQL<T> {
         return "SELECT * FROM " +
                 tableName +
                 this.getWHERE(reference);
+    }
+
+    /**
+     * Create a SELECT query
+     *
+     * @param reference The reference fields that should be used in the filter ( WHERE )
+     * @return The SELECT query as a String
+     */
+    public String createSelectQueryBigger(List<String> reference) {
+        return "SELECT * FROM " +
+                tableName +
+                this.getWHEREBigger(reference);
     }
 
     /**

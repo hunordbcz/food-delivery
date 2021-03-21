@@ -5,13 +5,12 @@ import net.debreczeni.food.delivery.dto.OrderDTO;
 import net.debreczeni.food.delivery.model.Order;
 import net.debreczeni.food.delivery.util.Pair;
 
+import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.ASC;
+import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.DESC;
 
 public class OrderRepository extends AbstractRepository<OrderDTO>{
     private static final String TABLE_NAME = "orders";
@@ -31,6 +30,18 @@ public class OrderRepository extends AbstractRepository<OrderDTO>{
         rules.add(new Pair<>("user_id", id));
 
         List<OrderDTO> response = select(rules, ASC);
+        if (response != null) {
+            return response;
+        }
+
+        return Collections.emptyList();
+    }
+
+    public List<OrderDTO> findFrom(Timestamp from) {
+        List<Pair<String, Object>> rules = new LinkedList<>();
+        rules.add(new Pair<>("created_at", from));
+
+        List<OrderDTO> response = selectBigger(rules, ASC);
         if (response != null) {
             return response;
         }

@@ -22,6 +22,13 @@ public class OrderTableModel extends AbstractTableModel {
     protected final OrderBLL orderBLL = new OrderBLL();
     protected List<Order> orders;
 
+    public OrderTableModel() {
+    }
+
+    public OrderTableModel(List<Order> orders) {
+        this.orders = orders;
+    }
+
     public void refresh() {
         orders = orderBLL.findAll();
         fireTableDataChanged();

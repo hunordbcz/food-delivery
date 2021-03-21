@@ -6,6 +6,7 @@ import net.debreczeni.food.delivery.model.Order;
 import net.debreczeni.food.delivery.model.PaymentType;
 import net.debreczeni.food.delivery.repository.OrderRepository;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,6 +107,10 @@ public class OrderService implements Service<Order> {
 
     public List<Order> findByUserID(int id) {
         return orderRepository.findByUserID(id).stream().map(OrderService::fromDTO).collect(Collectors.toList());
+    }
+
+    public List<Order> findFrom(Timestamp currentStartInterval) {
+        return orderRepository.findFrom(currentStartInterval).stream().map(OrderService::fromDTO).collect(Collectors.toList());
     }
 
     private static class Singleton {

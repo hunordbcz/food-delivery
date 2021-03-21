@@ -6,6 +6,8 @@ import net.debreczeni.food.delivery.model.Item;
 import net.debreczeni.food.delivery.model.Order;
 import net.debreczeni.food.delivery.model.PaymentType;
 
+import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.List;
 
 public class OrderBLL {
@@ -29,5 +31,13 @@ public class OrderBLL {
 
     public void cancel(Order order) {
         orderDAO.cancel(order);
+    }
+
+    public List<Order> findAll(boolean showDeleted) {
+        return orderDAO.findAll(showDeleted);
+    }
+
+    public List<Order> findFrom(Timestamp currentStartInterval) {
+        return orderDAO.findFrom(currentStartInterval);
     }
 }

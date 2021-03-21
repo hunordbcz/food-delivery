@@ -45,4 +45,12 @@ public class OrderDAO {
     public void cancel(Order order) {
         orderService.softDelete(order);
     }
+
+    public List<Order> findAll(boolean showDeleted) {
+        return orderService.findAll(showDeleted);
+    }
+
+    public List<Order> findFrom(Timestamp currentStartInterval) {
+        return orderService.findFrom(currentStartInterval);
+    }
 }

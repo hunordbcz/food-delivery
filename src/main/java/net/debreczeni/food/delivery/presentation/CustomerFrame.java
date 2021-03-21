@@ -12,7 +12,10 @@ import net.debreczeni.food.delivery.service.ItemService;
 import javax.swing.*;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -20,7 +23,6 @@ import java.util.Comparator;
 public class CustomerFrame extends JFrame {
     private final ItemTableModel cartTableModel;
     private final ItemTableModel itemTableModel;
-    private ItemService itemService = new ItemService();
     private JTabbedPane tabbedPane;
     private JPanel dashboardPanel;
     private JButton addButton;
@@ -46,7 +48,7 @@ public class CustomerFrame extends JFrame {
     private UserBLL userBLL = new UserBLL();
 
     public CustomerFrame(Component relativeTo, User user) {
-        customer = (Customer)user;
+        customer = (Customer) user;
         this.setTitle(this.getClass().getSimpleName());
         this.setContentPane(this.dashboardPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,15 +119,19 @@ public class CustomerFrame extends JFrame {
         });
 
 
-        TableRowSorter<ItemTableModel> sorter = new TableRowSorter<>(((ItemTableModel) itemsTable.getModel()));
-        sorter.setRowFilter(RowFilter.regexFilter(searchItemField.getText()));
+        TableRowSorter<ItemTableModel> sorter = new TableRowSorter<>(itemTableModel);
+        RowFilter<Object, Object> filter = new RowFilter<>() {
+            public boolean include(Entry entry) {
+                return ((String) entry.getValue(0)).toLowerCase().contains(searchItemField.getText().toLowerCase());
+            }
+        };
+        sorter.setRowFilter(filter);
 
         itemsTable.setRowSorter(sorter);
         searchItemField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
-                sorter.setRowFilter(RowFilter.regexFilter(searchItemField.getText()));
-                System.out.println(e.getKeyChar());
+                sorter.setRowFilter(filter);
             }
         });
 
@@ -155,6 +161,11 @@ public class CustomerFrame extends JFrame {
             } catch (InvalidInput invalidInput) {
                 JOptionPane.showMessageDialog(this, invalidInput.getMessage(), "Invalid input", JOptionPane.ERROR_MESSAGE);
             }
+        });
+
+        tabbedPane.addChangeListener(l -> {
+            itemTableModel.refresh();
+            customerOrderTableModel.refresh();
         });
     }
 }

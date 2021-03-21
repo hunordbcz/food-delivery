@@ -33,8 +33,26 @@ public class UserBLL {
         return user;
     }
 
-    public User register(String name, String username, String password, String passwordConfirmation, String nrIdentity, String cnp, String address) {
-        return userDAO.register(name, username, password, passwordConfirmation, nrIdentity, cnp, address);
+    public User register(String name, String username, String password, String passwordConfirmation, String nrIdentity, String cnp, String address) throws Exception {
+        if (!password.equals(passwordConfirmation)) {
+            throw new InvalidInput("Passwords don't match");
+        }
+        if (name.isEmpty() ||
+                username.isEmpty() ||
+                nrIdentity.isEmpty() ||
+                cnp.isEmpty() ||
+                address.isEmpty()) {
+            throw new InvalidInput("Some fields are empty");
+        }
+
+        int cnpVal;
+        try {
+            cnpVal = Integer.parseInt(cnp);
+        } catch (Exception ex) {
+            throw new InvalidInput("Invalid CNP");
+        }
+
+        return userDAO.register(name, username, password, nrIdentity, cnpVal, address);
     }
 
     public BiFunction<JFrame, User, JFrame> getHomepage(User user) {
@@ -58,22 +76,22 @@ public class UserBLL {
     }
 
     public void updateInformation(Customer customer, String name, String username, String password, String passwordConfirmation, String nrIdentity, String cnp, String address) throws InvalidInput {
-        if(!password.equals(passwordConfirmation)){
+        if (!password.equals(passwordConfirmation)) {
             throw new InvalidInput("Password doesn't match");
         }
 
         int cnpInt;
-        try{
-             cnpInt = Integer.parseInt(cnp);
-        }catch (Exception e){
+        try {
+            cnpInt = Integer.parseInt(cnp);
+        } catch (Exception e) {
             throw new InvalidInput("Invalid CNP");
         }
 
-        if(name.isEmpty() ||
-        username.isEmpty() ||
-        password.isEmpty() ||
-        nrIdentity.isEmpty() ||
-        address.isEmpty()){
+        if (name.isEmpty() ||
+                username.isEmpty() ||
+                password.isEmpty() ||
+                nrIdentity.isEmpty() ||
+                address.isEmpty()) {
             throw new InvalidInput("Some fields are empty");
         }
 

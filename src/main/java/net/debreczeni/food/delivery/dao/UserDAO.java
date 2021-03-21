@@ -14,17 +14,8 @@ public class UserDAO {
         userService = new UserService();
     }
 
-    public User login(String username, String password) throws InvalidCredentialsException {
+    public User login(String username, String password) {
         return userService.findByUsernameAndPassword(username, password);
-    }
-
-    public User register(String name, String username, String password, String passwordConfirmation, String nrIdentity, String cnp, String address) {
-        final User user = new Customer(name, username, password, nrIdentity, Integer.parseInt(cnp), address);
-        if (!userService.insert(user)) {
-
-        }
-
-        return user;
     }
 
     public List<User> findAll() {
@@ -37,5 +28,14 @@ public class UserDAO {
 
     public void delete(User user) {
         userService.delete(user);
+    }
+
+    public User register(String name, String username, String password, String nrIdentity, int cnp, String address) throws Exception {
+        final User user = new Customer(name, username, password, nrIdentity, cnp, address);
+        if(!userService.insert(user)){
+            throw new Exception("Couldn't create user");
+        }
+
+        return user;
     }
 }

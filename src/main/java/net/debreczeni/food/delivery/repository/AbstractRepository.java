@@ -168,13 +168,28 @@ abstract class AbstractRepository<T extends HasID> implements Repository<T> {
             }
         }
 
-        String query = null;
+        String query;
         if (order == DESC) {
             query = queries.createDescSelectQuery(fields);
         } else {
             query = queries.createSelectQuery(fields);
         }
 
+        return sendQuery(query, values);
+    }
+
+    public List<T> selectBigger(List<Pair<String, Object>> rules, SQL.ORDER_TYPE order) {
+        List<String> fields = new LinkedList<>();
+        List<Object> values = new LinkedList<>();
+
+        if (rules != null) {
+            for (Pair<String, Object> rule : rules) {
+                fields.add(rule.first);
+                values.add(rule.second);
+            }
+        }
+
+        String query = queries.createSelectQueryBigger(fields);
         return sendQuery(query, values);
     }
 
@@ -285,8 +300,8 @@ abstract class AbstractRepository<T extends HasID> implements Repository<T> {
      * @return List of Objects of current type
      */
     private List<T> createObjects(ResultSet resultSet) {
-        List<T> list = new ArrayList<T>();
-        Method method = null;
+        List<T> list = new ArrayList<>();
+        Method method;
         try {
             while (resultSet.next()) {
                 T instance = type.newInstance();

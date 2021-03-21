@@ -35,15 +35,22 @@ public class RegisterFrame extends JFrame {
             this.dispose();
         });
         submitButton.addActionListener(e -> {
-            userBLL.register(
-                    nameField.getText(),
-                    username.getText(),
-                    password.getText(),
-                    passwordConfirmation.getText(),
-                    nrIdentity.getText(),
-                    cnp.getText(),
-                    address.getText()
-            );
+            try{
+                userBLL.register(
+                        nameField.getText(),
+                        username.getText(),
+                        password.getText(),
+                        passwordConfirmation.getText(),
+                        nrIdentity.getText(),
+                        cnp.getText(),
+                        address.getText()
+                );
+
+                this.dispose();
+                new LoginFrame().setVisible(true);
+            }catch (Exception ex){
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
     }
 }

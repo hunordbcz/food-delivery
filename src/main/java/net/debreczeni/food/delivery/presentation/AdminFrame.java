@@ -1,14 +1,15 @@
 package net.debreczeni.food.delivery.presentation;
 
+import net.debreczeni.food.delivery.exceptions.InvalidInput;
 import net.debreczeni.food.delivery.model.Order;
 import net.debreczeni.food.delivery.model.User;
-import net.debreczeni.food.delivery.presentation.tables.*;
-import net.debreczeni.food.delivery.service.OrderService;
+import net.debreczeni.food.delivery.presentation.tables.EditableItemTableModel;
+import net.debreczeni.food.delivery.presentation.tables.EditableOrderTableModel;
+import net.debreczeni.food.delivery.presentation.tables.ItemTableModel;
+import net.debreczeni.food.delivery.presentation.tables.UserTableModel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
@@ -16,6 +17,8 @@ import java.util.Comparator;
 
 public class AdminFrame extends JFrame {
 
+    private final ItemTableModel itemTableModel;
+    private final UserTableModel userTableModel;
     private JPanel dashboardPanel;
     private JTable itemTable;
     private JButton refreshTablesButton;
@@ -23,14 +26,11 @@ public class AdminFrame extends JFrame {
     private JTable ordersTable;
     private JButton addItemButton;
     private JButton deleteItemButton;
-    private JButton addAdminButton;
     private JButton deleteUserButton;
     private JButton logoutButton;
     private JButton showItemsButton;
     private JButton cancelButton;
     private JButton reportsButton;
-    private final ItemTableModel itemTableModel;
-    private final UserTableModel userTableModel;
 
     public AdminFrame(Component relativeTo, User user) {
         this.setTitle(this.getClass().getSimpleName());
@@ -43,7 +43,7 @@ public class AdminFrame extends JFrame {
         userTable.setModel(userTableModel);
         final ListSelectionModel userSelectionModel = userTable.getSelectionModel();
         userSelectionModel.addListSelectionListener(l -> {
-            if(l.getValueIsAdjusting()){
+            if (l.getValueIsAdjusting()) {
                 return;
             }
 
@@ -78,7 +78,7 @@ public class AdminFrame extends JFrame {
 
         ListSelectionModel itemTableSelection = itemTable.getSelectionModel();
         itemTableSelection.addListSelectionListener(l -> {
-            if(l.getValueIsAdjusting()){
+            if (l.getValueIsAdjusting()) {
                 return;
             }
 
@@ -99,9 +99,9 @@ public class AdminFrame extends JFrame {
 
         final EditableOrderTableModel orderTableModel = new EditableOrderTableModel();
         ordersTable.setModel(orderTableModel);
-        final ListSelectionModel orderSelectionModel=  ordersTable.getSelectionModel();
+        final ListSelectionModel orderSelectionModel = ordersTable.getSelectionModel();
         orderSelectionModel.addListSelectionListener(l -> {
-            if(l.getValueIsAdjusting()){
+            if (l.getValueIsAdjusting()) {
                 return;
             }
 
@@ -131,25 +131,30 @@ public class AdminFrame extends JFrame {
             cancelButton.setEnabled(false);
             showItemsButton.setEnabled(false);
         });
-        showItemsButton.addActionListener(e -> {
-            Arrays.stream(ordersTable.getSelectedRows())
-                    .map(row -> ordersTable.getRowSorter().convertRowIndexToModel(row))
-                    .boxed()
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(orderId -> {
-                        final Order order = orderTableModel.getOrder(orderId);
-                        final ItemsListFrame itemsListFrame = new ItemsListFrame(
-                                this,
-                                String.format("ORDER #%d - %s", order.getId(), order.getUser().getName()),
-                                order.getItems()
-                        );
-                        itemsListFrame.setVisible(true);
-                        itemsListFrame.setAlwaysOnTop(true);
-                    });
-        });
+        showItemsButton.addActionListener(e ->
+                Arrays.stream(ordersTable.getSelectedRows())
+                        .map(row -> ordersTable.getRowSorter().convertRowIndexToModel(row))
+                        .boxed()
+                        .sorted(Comparator.reverseOrder())
+                        .forEach(orderId -> {
+                            final Order order = orderTableModel.getOrder(orderId);
+                            final ItemsListFrame itemsListFrame = new ItemsListFrame(
+                                    this,
+                                    String.format("ORDER #%d - %s", order.getId(), order.getUser().getName()),
+                                    order.getItems()
+                            );
+                            itemsListFrame.setVisible(true);
+                            itemsListFrame.setAlwaysOnTop(true);
+                        }));
         reportsButton.addActionListener(e -> {
-            ReportSetupFrame reportSetupFrame = new ReportSetupFrame(this);
-            reportSetupFrame.setVisible(true);
+            ReportSetupFrame reportSetupFrame;
+            try {
+                reportSetupFrame = new ReportSetupFrame(this);
+                reportSetupFrame.setVisible(true);
+            } catch (InvalidInput invalidInput) {
+                JOptionPane.showMessageDialog(this, invalidInput.getMessage(), null, JOptionPane.WARNING_MESSAGE);
+            }
+
         });
     }
 }
