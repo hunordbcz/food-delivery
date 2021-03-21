@@ -11,15 +11,22 @@ import java.awt.*;
 import java.util.List;
 
 
-public class CheckoutFrame extends JFrame{
+public class CheckoutFrame extends JFrame {
+    private final OrderBLL orderBLL = new OrderBLL();
     private JPanel mainPanel;
     private JTable itemsTable;
     private JTextField deliveryAddressField;
     private JRadioButton cashRadioButton;
     private JRadioButton cardRadioButton;
     private JButton submitOrderButton;
+    private JLabel itemsValueField;
+    private JLabel discountValueField;
+    private JLabel totalValueField;
+    private Double itemsValue;
+    private Double discountValue = 0D;
+    private Double totalValue;
 
-    private final OrderBLL orderBLL = new OrderBLL();
+
 
     public CheckoutFrame(Component relativeTo, Customer customer, List<Item> items) throws HeadlessException {
         this.setTitle(this.getClass().getSimpleName());
@@ -27,6 +34,16 @@ public class CheckoutFrame extends JFrame{
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.pack();
         this.setLocationRelativeTo(relativeTo);
+
+        itemsValue = items.stream().map(Item::getPrice).reduce(0D, Double::sum);
+        if (customer.getIsLoyal()) {
+            discountValue = items.stream().map(Item::getPrice).reduce(0D, Double::sum) * 0.05;
+        }
+        totalValue = itemsValue - discountValue;
+
+        itemsValueField.setText(String.format("%.2f", itemsValue));
+        discountValueField.setText(String.format("%.2f", discountValue));
+        totalValueField.setText(String.format("%.2f", totalValue));
 
         deliveryAddressField.setText(customer.getAddress());
         ButtonGroup bg = new ButtonGroup();
@@ -37,11 +54,18 @@ public class CheckoutFrame extends JFrame{
         itemsTable.setModel(itemsTableModel);
 
         submitOrderButton.addActionListener(e -> {
-            try{
-                orderBLL.makeOrder(customer, items, deliveryAddressField.getText(), cashRadioButton.isSelected() ? PaymentType.CASH : PaymentType.CARD);
+            try {
+                orderBLL.makeOrder(
+                        customer,
+                        items,
+                        deliveryAddressField.getText(),
+                        cashRadioButton.isSelected() ? PaymentType.CASH : PaymentType.CARD,
+                        discountValue,
+                        totalValue
+                );
 
                 this.dispose();
-            }catch (Exception ex){
+            } catch (Exception ex) {
 
             }
         });

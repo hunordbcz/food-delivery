@@ -22,4 +22,6 @@ public class OrderDTO implements HasID, SafeDeletableDTO {
     private Boolean is_processed;
     private Integer payment_type;
     private Boolean is_deleted;
+    private Double discount;
+    private Double total;
 }

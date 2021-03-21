@@ -2,7 +2,9 @@ package net.debreczeni.food.delivery.bll;
 
 import net.debreczeni.food.delivery.dao.UserDAO;
 import net.debreczeni.food.delivery.exceptions.InvalidCredentialsException;
+import net.debreczeni.food.delivery.exceptions.InvalidInput;
 import net.debreczeni.food.delivery.model.Administrator;
+import net.debreczeni.food.delivery.model.Customer;
 import net.debreczeni.food.delivery.model.User;
 import net.debreczeni.food.delivery.presentation.AdminFrame;
 import net.debreczeni.food.delivery.presentation.CustomerFrame;
@@ -19,10 +21,19 @@ public class UserBLL {
     }
 
     public User login(String username, String password) throws InvalidCredentialsException {
-        return userDAO.login(username, password);
+        final User user = userDAO.login(username, password);
+        if (user == null) {
+            throw new InvalidCredentialsException();
+        }
+
+        if (user.getIsDeleted()) {
+            throw new InvalidCredentialsException("Your account has been deleted");
+        }
+
+        return user;
     }
 
-    public User register(String name, String username, String password, String passwordConfirmation, String nrIdentity, String cnp, String address){
+    public User register(String name, String username, String password, String passwordConfirmation, String nrIdentity, String cnp, String address) {
         return userDAO.register(name, username, password, passwordConfirmation, nrIdentity, cnp, address);
     }
 
@@ -44,5 +55,34 @@ public class UserBLL {
 
     public void delete(User user) {
         userDAO.delete(user);
+    }
+
+    public void updateInformation(Customer customer, String name, String username, String password, String passwordConfirmation, String nrIdentity, String cnp, String address) throws InvalidInput {
+        if(!password.equals(passwordConfirmation)){
+            throw new InvalidInput("Password doesn't match");
+        }
+
+        int cnpInt;
+        try{
+             cnpInt = Integer.parseInt(cnp);
+        }catch (Exception e){
+            throw new InvalidInput("Invalid CNP");
+        }
+
+        if(name.isEmpty() ||
+        username.isEmpty() ||
+        password.isEmpty() ||
+        nrIdentity.isEmpty() ||
+        address.isEmpty()){
+            throw new InvalidInput("Some fields are empty");
+        }
+
+        customer.setUsername(username);
+        customer.setPassword(password);
+        customer.setNrIdentity(nrIdentity);
+        customer.setCnp(cnpInt);
+        customer.setAddress(address);
+
+        userDAO.update(customer);
     }
 }

@@ -15,7 +15,7 @@ public class OrderDAO {
     private final OrderService orderService = new OrderService();
     private final ItemService itemService = new ItemService();
 
-    public void makeOrder(Customer customer, List<Item> items, String deliveryAddress, PaymentType paymentType) {
+    public void makeOrder(Customer customer, List<Item> items, String deliveryAddress, PaymentType paymentType, Double discount, Double total) {
         orderService.insert(new Order(
                 -1,
                 customer,
@@ -23,12 +23,26 @@ public class OrderDAO {
                 deliveryAddress,
                 paymentType,
                 false,
+                discount,
+                total,
                 new Timestamp(new Date().getTime()),
-                null
+                false
         ));
     }
 
-    public List<Order> getAll() {
+    public List<Order> findAll() {
         return orderService.findAll();
+    }
+
+    public List<Order> findByUserID(int id) {
+        return orderService.findByUserID(id);
+    }
+
+    public void update(Order order) {
+        orderService.update(order);
+    }
+
+    public void cancel(Order order) {
+        orderService.softDelete(order);
     }
 }

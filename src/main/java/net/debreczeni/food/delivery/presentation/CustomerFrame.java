@@ -1,18 +1,18 @@
 package net.debreczeni.food.delivery.presentation;
 
+import net.debreczeni.food.delivery.bll.UserBLL;
+import net.debreczeni.food.delivery.exceptions.InvalidInput;
 import net.debreczeni.food.delivery.model.Customer;
 import net.debreczeni.food.delivery.model.User;
 import net.debreczeni.food.delivery.presentation.tables.CustomItemTableModel;
+import net.debreczeni.food.delivery.presentation.tables.CustomerOrderTableModel;
 import net.debreczeni.food.delivery.presentation.tables.ItemTableModel;
 import net.debreczeni.food.delivery.service.ItemService;
 
 import javax.swing.*;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -27,13 +27,23 @@ public class CustomerFrame extends JFrame {
     private JTable itemsTable;
     private JButton removeButton;
     private JTable cartTable;
-    private JScrollPane pastOrdersTable;
     private JLabel totalPrice;
     private JButton checkoutButton;
     private JScrollPane itemsContainerPane;
     private JTextField searchItemField;
+    private JTable orderHistoryTable;
+    private JTextField nameField;
+    private JTextField addressField;
+    private JTextField cnpField;
+    private JTextField nrIdentityField;
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JPasswordField confirmPasswordField;
+    private JButton submitButton;
+    private JButton logoutButton;
     private CheckoutFrame checkoutFrame;
     private Customer customer;
+    private UserBLL userBLL = new UserBLL();
 
     public CustomerFrame(Component relativeTo, User user) {
         customer = (Customer)user;
@@ -42,6 +52,12 @@ public class CustomerFrame extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.pack();
         this.setLocationRelativeTo(relativeTo);
+
+        nameField.setText(customer.getName());
+        usernameField.setText(customer.getUsername());
+        nrIdentityField.setText(customer.getNrIdentity());
+        cnpField.setText(customer.getCnp().toString());
+        addressField.setText(customer.getAddress());
 
         cartTableModel = new CustomItemTableModel(new ArrayList<>());
         cartTable.setModel(cartTableModel);
@@ -95,7 +111,7 @@ public class CustomerFrame extends JFrame {
             checkoutFrame.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    checkoutButton.setEnabled(true);
+                    cartTableModel.removeAll();
                 }
             });
         });
@@ -110,6 +126,34 @@ public class CustomerFrame extends JFrame {
             public void keyTyped(KeyEvent e) {
                 sorter.setRowFilter(RowFilter.regexFilter(searchItemField.getText()));
                 System.out.println(e.getKeyChar());
+            }
+        });
+
+        final CustomerOrderTableModel customerOrderTableModel = new CustomerOrderTableModel(customer);
+        customerOrderTableModel.refresh();
+        orderHistoryTable.setModel(customerOrderTableModel);
+        logoutButton.addActionListener(e -> {
+            final LoginFrame loginFrame = new LoginFrame();
+            loginFrame.setVisible(true);
+            this.dispose();
+        });
+
+        submitButton.addActionListener(e -> {
+            try {
+                userBLL.updateInformation(
+                        customer,
+                        nameField.getText(),
+                        usernameField.getText(),
+                        passwordField.getText(),
+                        confirmPasswordField.getText(),
+                        nrIdentityField.getText(),
+                        cnpField.getText(),
+                        addressField.getText()
+                );
+
+                JOptionPane.showMessageDialog(this, "Information successfully updated", null, JOptionPane.INFORMATION_MESSAGE);
+            } catch (InvalidInput invalidInput) {
+                JOptionPane.showMessageDialog(this, invalidInput.getMessage(), "Invalid input", JOptionPane.ERROR_MESSAGE);
             }
         });
     }

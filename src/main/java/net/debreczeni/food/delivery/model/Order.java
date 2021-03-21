@@ -19,6 +19,8 @@ public final class Order implements HasID, SafeDeletable{
     private String deliveryAddress;
     private PaymentType paymentType;
     private Boolean isProcessed;
+    private Double discount;
+    private Double total;
     private Timestamp createdAt;
     private Boolean isDeleted;
 

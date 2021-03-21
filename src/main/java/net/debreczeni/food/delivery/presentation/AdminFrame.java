@@ -1,14 +1,14 @@
 package net.debreczeni.food.delivery.presentation;
 
+import net.debreczeni.food.delivery.model.Order;
 import net.debreczeni.food.delivery.model.User;
-import net.debreczeni.food.delivery.presentation.tables.OrderTableModel;
-import net.debreczeni.food.delivery.presentation.tables.UserTableModel;
-import net.debreczeni.food.delivery.presentation.tables.EditableItemTableModel;
-import net.debreczeni.food.delivery.presentation.tables.ItemTableModel;
+import net.debreczeni.food.delivery.presentation.tables.*;
 import net.debreczeni.food.delivery.service.OrderService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
@@ -19,13 +19,16 @@ public class AdminFrame extends JFrame {
     private JPanel dashboardPanel;
     private JTable itemTable;
     private JButton refreshTablesButton;
-    private JButton backToLoginButton;
     private JTable userTable;
     private JTable ordersTable;
     private JButton addItemButton;
     private JButton deleteItemButton;
     private JButton addAdminButton;
     private JButton deleteUserButton;
+    private JButton logoutButton;
+    private JButton showItemsButton;
+    private JButton cancelButton;
+    private JButton reportsButton;
     private final ItemTableModel itemTableModel;
     private final UserTableModel userTableModel;
 
@@ -46,7 +49,7 @@ public class AdminFrame extends JFrame {
 
             deleteUserButton.setEnabled(true);
         });
-        deleteItemButton.addActionListener(l -> {
+        deleteUserButton.addActionListener(l -> {
             Arrays.stream(userTable.getSelectedRows())
                     .map(row -> userTable.getRowSorter().convertRowIndexToModel(row))
                     .boxed()
@@ -93,13 +96,60 @@ public class AdminFrame extends JFrame {
             deleteItemButton.setEnabled(false);
         });
 
+
+        final EditableOrderTableModel orderTableModel = new EditableOrderTableModel();
+        ordersTable.setModel(orderTableModel);
+        final ListSelectionModel orderSelectionModel=  ordersTable.getSelectionModel();
+        orderSelectionModel.addListSelectionListener(l -> {
+            if(l.getValueIsAdjusting()){
+                return;
+            }
+
+            cancelButton.setEnabled(true);
+            showItemsButton.setEnabled(true);
+        });
+
+        logoutButton.addActionListener(e -> {
+            final LoginFrame loginFrame = new LoginFrame();
+            loginFrame.setVisible(true);
+            this.dispose();
+        });
+
         refreshTablesButton.addActionListener(l -> {
             itemTableModel.refresh();
             userTableModel.refresh();
+            orderTableModel.refresh();
         });
 
-        final OrderService orderService = new OrderService();
-        final OrderTableModel orderTableModel = new OrderTableModel(orderService::findAll);
-        ordersTable.setModel(orderTableModel);
+        cancelButton.addActionListener(e -> {
+            Arrays.stream(ordersTable.getSelectedRows())
+                    .map(row -> ordersTable.getRowSorter().convertRowIndexToModel(row))
+                    .boxed()
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(orderTableModel::cancelOrder);
+
+            cancelButton.setEnabled(false);
+            showItemsButton.setEnabled(false);
+        });
+        showItemsButton.addActionListener(e -> {
+            Arrays.stream(ordersTable.getSelectedRows())
+                    .map(row -> ordersTable.getRowSorter().convertRowIndexToModel(row))
+                    .boxed()
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(orderId -> {
+                        final Order order = orderTableModel.getOrder(orderId);
+                        final ItemsListFrame itemsListFrame = new ItemsListFrame(
+                                this,
+                                String.format("ORDER #%d - %s", order.getId(), order.getUser().getName()),
+                                order.getItems()
+                        );
+                        itemsListFrame.setVisible(true);
+                        itemsListFrame.setAlwaysOnTop(true);
+                    });
+        });
+        reportsButton.addActionListener(e -> {
+            ReportSetupFrame reportSetupFrame = new ReportSetupFrame(this);
+            reportSetupFrame.setVisible(true);
+        });
     }
 }

@@ -5,44 +5,40 @@ import net.debreczeni.food.delivery.model.Order;
 
 import javax.swing.table.AbstractTableModel;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class OrderTableModel extends AbstractTableModel {
 
-    private final static int ID = 0;
-    private final static int NR_ITEMS = 1;
-    private final static int USER = 2;
-    private final static int CREATED_AT = 3;
-    private final static int DELIVERY_ADDRESS = 4;
-    private final static int IS_PROCESSED = 5;
-    private final static int PAYMENT_TYPE = 6;
+    protected final static int ID = 0;
+    protected final static int NR_ITEMS = 1;
+    protected final static int USER = 2;
+    protected final static int CREATED_AT = 3;
+    protected final static int DELIVERY_ADDRESS = 4;
+    protected final static int IS_PROCESSED = 5;
+    protected final static int PAYMENT_TYPE = 6;
+    protected final static int DISCOUNT = 7;
+    protected final static int TOTAL = 8;
 
-    private final OrderBLL orderBLL = new OrderBLL();
-    private final Supplier<List<Order>> orderSupplier;
-    private List<Order> orders;
-
-    public OrderTableModel(Supplier<List<Order>> orderSupplier) {
-        this.orderSupplier = orderSupplier;
-        refresh();
-    }
+    protected final OrderBLL orderBLL = new OrderBLL();
+    protected List<Order> orders;
 
     public void refresh() {
-        orders = orderSupplier.get();
+        orders = orderBLL.findAll();
         fireTableDataChanged();
     }
 
     @Override
     public int getRowCount() {
+        if (orders == null) {
+            refresh();
+        }
         return orders.size();
     }
 
     @Override
     public int getColumnCount() {
-        return 7;
+        return 9;
     }
-
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
@@ -62,6 +58,10 @@ public class OrderTableModel extends AbstractTableModel {
                 return order.getIsProcessed();
             case PAYMENT_TYPE:
                 return order.getPaymentType();
+            case DISCOUNT:
+                return order.getDiscount();
+            case TOTAL:
+                return order.getTotal();
             default:
                 return null;
         }
@@ -84,6 +84,10 @@ public class OrderTableModel extends AbstractTableModel {
                 return "Is Processed";
             case PAYMENT_TYPE:
                 return "Payment Type";
+            case DISCOUNT:
+                return "Discount";
+            case TOTAL:
+                return "Total";
             default:
                 return null;
         }
@@ -108,8 +112,20 @@ public class OrderTableModel extends AbstractTableModel {
                 return Timestamp.class;
             case IS_PROCESSED:
                 return Boolean.class;
+            case DISCOUNT:
+            case TOTAL:
+                return Double.class;
             default:
                 return null;
         }
+    }
+
+    public void cancelOrder(int row) {
+        orderBLL.cancel(orders.get(row));
+        refresh();
+    }
+
+    public Order getOrder(Integer orderId) {
+        return orders.get(orderId);
     }
 }

@@ -181,14 +181,13 @@ public class UserTableModel extends AbstractTableModel {
             case ID:
             case CNP:
                 return Integer.class;
+            case IS_LOYAL:
+            case IS_ADMIN:
+                return Boolean.class;
             case NAME:
             case NR_IDENTITY:
             case USERNAME:
             case ADDRESS:
-                return String.class;
-            case IS_LOYAL:
-            case IS_ADMIN:
-                return Boolean.class;
             default:
                 return String.class;
         }

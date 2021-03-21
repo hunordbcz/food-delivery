@@ -22,10 +22,10 @@ public final class Customer extends User {
     }
 
     public Customer(Integer id, String name, String username, String password, String nrIdentity, Integer cnp, String address) {
-        this(id, name, username, password, nrIdentity, cnp, address, false, null);
+        this(id, name, username, password, nrIdentity, cnp, address, false, false);
     }
 
     public Customer(String name, String username, String password, String nrIdentity, Integer cnp, String address) {
-        this(-1, name, username, password, nrIdentity, cnp, address, false, null);
+        this(-1, name, username, password, nrIdentity, cnp, address, false, false);
     }
 }

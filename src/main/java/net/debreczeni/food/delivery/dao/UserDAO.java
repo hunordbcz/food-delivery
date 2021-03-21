@@ -15,12 +15,7 @@ public class UserDAO {
     }
 
     public User login(String username, String password) throws InvalidCredentialsException {
-        final User user = userService.findByUsernameAndPassword(username, password);
-        if (user == null) {
-            throw new InvalidCredentialsException();
-        }
-
-        return user;
+        return userService.findByUsernameAndPassword(username, password);
     }
 
     public User register(String name, String username, String password, String passwordConfirmation, String nrIdentity, String cnp, String address) {

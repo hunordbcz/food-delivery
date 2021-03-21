@@ -4,16 +4,15 @@ import net.debreczeni.food.delivery.dto.OrderDTO;
 import net.debreczeni.food.delivery.model.Item;
 import net.debreczeni.food.delivery.model.Order;
 import net.debreczeni.food.delivery.model.PaymentType;
-import net.debreczeni.food.delivery.model.User;
 import net.debreczeni.food.delivery.repository.OrderRepository;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class OrderService implements Service<Order>{
-    private final OrderRepository orderRepository = new OrderRepository();
+public class OrderService implements Service<Order> {
     private static final ItemService itemService = new ItemService();
+    private final OrderRepository orderRepository = new OrderRepository();
 
     public OrderService() {
     }
@@ -24,7 +23,7 @@ public class OrderService implements Service<Order>{
 
     public static OrderDTO toDTO(Order cart) {
         return OrderDTO.builder()
-                .id(cart.getUser().getId())
+                .id(cart.getId())
                 .items_list(cart
                         .getItems().stream()
                         .map(item -> item.getId().toString())
@@ -36,6 +35,8 @@ public class OrderService implements Service<Order>{
                 .is_processed(cart.getIsProcessed())
                 .payment_type(cart.getPaymentType().getCode())
                 .is_deleted(cart.getIsDeleted())
+                .discount(cart.getDiscount())
+                .total(cart.getTotal())
                 .build();
     }
 
@@ -52,6 +53,8 @@ public class OrderService implements Service<Order>{
                 orderDTO.getDelivery_address(),
                 PaymentType.getType(orderDTO.getPayment_type()),
                 orderDTO.getIs_processed(),
+                orderDTO.getDiscount(),
+                orderDTO.getTotal(),
                 orderDTO.getCreated_at(),
                 orderDTO.getIs_deleted()
         );
@@ -84,17 +87,25 @@ public class OrderService implements Service<Order>{
 
     @Override
     public boolean update(Order order) {
-        return false;
+        return orderRepository.update(toDTO(order));
     }
 
     @Override
     public boolean delete(Order order) {
-        return false;
+        return delete(order, true);
+    }
+
+    public boolean delete(Order order, boolean softDelete) {
+        return softDelete ? softDelete(order) : orderRepository.delete(toDTO(order));
     }
 
     @Override
     public boolean softDelete(Order order) {
-        return false;
+        return orderRepository.softDelete(toDTO(order));
+    }
+
+    public List<Order> findByUserID(int id) {
+        return orderRepository.findByUserID(id).stream().map(OrderService::fromDTO).collect(Collectors.toList());
     }
 
     private static class Singleton {
