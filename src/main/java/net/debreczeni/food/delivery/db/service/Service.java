@@ -1,4 +1,4 @@
-package net.debreczeni.food.delivery.service;
+package net.debreczeni.food.delivery.db.service;
 
 import net.debreczeni.food.delivery.model.HasID;
 

@@ -1,20 +1,16 @@
-package net.debreczeni.food.delivery.service;
+package net.debreczeni.food.delivery.db.service;
 
+import net.debreczeni.food.delivery.db.repository.ItemRepository;
 import net.debreczeni.food.delivery.dto.ItemDTO;
 import net.debreczeni.food.delivery.model.Item;
-import net.debreczeni.food.delivery.repository.ItemRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class ItemService implements Service<Item> {
-    private ItemRepository itemRepository = new ItemRepository();
+    private final ItemRepository itemRepository = new ItemRepository();
 
     public ItemService() {
-    }
-
-    public static ItemService getInstance() {
-        return Singleton.INSTANCE;
     }
 
     public static ItemDTO toDTO(Item item) {
@@ -65,7 +61,7 @@ public class ItemService implements Service<Item> {
         return delete(item, true);
     }
 
-    public boolean delete(Item item, boolean softDelete){
+    public boolean delete(Item item, boolean softDelete) {
         return softDelete ? softDelete(item) : itemRepository.delete(toDTO(item));
     }
 
@@ -77,9 +73,5 @@ public class ItemService implements Service<Item> {
     @Override
     public Item findByID(int id) {
         return fromDTO(itemRepository.findByID(id));
-    }
-
-    private static class Singleton {
-        private static final ItemService INSTANCE = new ItemService();
     }
 }

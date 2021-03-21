@@ -22,9 +22,9 @@ public class CheckoutFrame extends JFrame {
     private JLabel itemsValueField;
     private JLabel discountValueField;
     private JLabel totalValueField;
-    private Double itemsValue;
+    private final Double itemsValue;
     private Double discountValue = 0D;
-    private Double totalValue;
+    private final Double totalValue;
 
 
 

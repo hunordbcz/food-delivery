@@ -1,4 +1,4 @@
-package net.debreczeni.food.delivery.repository;
+package net.debreczeni.food.delivery.db.repository;
 
 import net.debreczeni.food.delivery.model.HasID;
 import net.debreczeni.food.delivery.util.ConnectionFactory;
@@ -17,8 +17,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.lang.reflect.Modifier.isStatic;
-import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.ASC;
-import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.DESC;
+import static net.debreczeni.food.delivery.db.repository.SQL.ORDER_TYPE.ASC;
+import static net.debreczeni.food.delivery.db.repository.SQL.ORDER_TYPE.DESC;
 
 
 /**

@@ -7,7 +7,6 @@ import net.debreczeni.food.delivery.model.User;
 import net.debreczeni.food.delivery.presentation.tables.CustomItemTableModel;
 import net.debreczeni.food.delivery.presentation.tables.CustomerOrderTableModel;
 import net.debreczeni.food.delivery.presentation.tables.ItemTableModel;
-import net.debreczeni.food.delivery.service.ItemService;
 
 import javax.swing.*;
 import javax.swing.table.TableRowSorter;
@@ -44,8 +43,8 @@ public class CustomerFrame extends JFrame {
     private JButton submitButton;
     private JButton logoutButton;
     private CheckoutFrame checkoutFrame;
-    private Customer customer;
-    private UserBLL userBLL = new UserBLL();
+    private final Customer customer;
+    private final UserBLL userBLL = new UserBLL();
 
     public CustomerFrame(Component relativeTo, User user) {
         customer = (Customer) user;

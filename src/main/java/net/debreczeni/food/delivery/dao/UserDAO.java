@@ -1,9 +1,8 @@
 package net.debreczeni.food.delivery.dao;
 
-import net.debreczeni.food.delivery.exceptions.InvalidCredentialsException;
+import net.debreczeni.food.delivery.db.service.UserService;
 import net.debreczeni.food.delivery.model.Customer;
 import net.debreczeni.food.delivery.model.User;
-import net.debreczeni.food.delivery.service.UserService;
 
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class UserDAO {
 
     public User register(String name, String username, String password, String nrIdentity, int cnp, String address) throws Exception {
         final User user = new Customer(name, username, password, nrIdentity, cnp, address);
-        if(!userService.insert(user)){
+        if (!userService.insert(user)) {
             throw new Exception("Couldn't create user");
         }
 

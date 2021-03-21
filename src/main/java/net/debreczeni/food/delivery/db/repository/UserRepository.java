@@ -1,12 +1,8 @@
-package net.debreczeni.food.delivery.repository;
+package net.debreczeni.food.delivery.db.repository;
 
-import net.debreczeni.food.delivery.dto.ItemDTO;
 import net.debreczeni.food.delivery.dto.UserDTO;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
-public class UserRepository extends AbstractRepository<UserDTO>{
+public class UserRepository extends AbstractRepository<UserDTO> {
     private static final String TABLE_NAME = "users";
 
     public UserRepository() {

@@ -2,10 +2,8 @@ package net.debreczeni.food.delivery.presentation.tables;
 
 import net.debreczeni.food.delivery.bll.ItemBLL;
 import net.debreczeni.food.delivery.model.Item;
-import net.debreczeni.food.delivery.service.ItemService;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ItemTableModel extends AbstractTableModel {

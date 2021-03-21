@@ -1,11 +1,11 @@
-package net.debreczeni.food.delivery.service;
+package net.debreczeni.food.delivery.db.service;
 
+import net.debreczeni.food.delivery.db.repository.SQL;
+import net.debreczeni.food.delivery.db.repository.UserRepository;
 import net.debreczeni.food.delivery.dto.UserDTO;
 import net.debreczeni.food.delivery.model.Administrator;
 import net.debreczeni.food.delivery.model.Customer;
 import net.debreczeni.food.delivery.model.User;
-import net.debreczeni.food.delivery.repository.SQL;
-import net.debreczeni.food.delivery.repository.UserRepository;
 import net.debreczeni.food.delivery.util.Pair;
 
 import java.util.LinkedList;
@@ -125,7 +125,7 @@ public class UserService implements Service<User> {
         return delete(user, true);
     }
 
-    public boolean delete(User user, boolean softDelete){
+    public boolean delete(User user, boolean softDelete) {
         return softDelete ? softDelete(user) : userRepository.delete(toDTO(user));
     }
 

@@ -1,18 +1,16 @@
-package net.debreczeni.food.delivery.repository;
+package net.debreczeni.food.delivery.db.repository;
 
-import net.debreczeni.food.delivery.dto.ItemDTO;
 import net.debreczeni.food.delivery.dto.OrderDTO;
-import net.debreczeni.food.delivery.model.Order;
 import net.debreczeni.food.delivery.util.Pair;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.ASC;
-import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.DESC;
+import static net.debreczeni.food.delivery.db.repository.SQL.ORDER_TYPE.ASC;
 
-public class OrderRepository extends AbstractRepository<OrderDTO>{
+public class OrderRepository extends AbstractRepository<OrderDTO> {
     private static final String TABLE_NAME = "orders";
 
     public OrderRepository() {

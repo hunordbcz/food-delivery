@@ -1,12 +1,7 @@
 package net.debreczeni.food.delivery.model;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
-import java.sql.Timestamp;
-
 public interface HasID {
-    public Integer getId();
+    Integer getId();
 
-    public void setId(Integer id);
+    void setId(Integer id);
 }

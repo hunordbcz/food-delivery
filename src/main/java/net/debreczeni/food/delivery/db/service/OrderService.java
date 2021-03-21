@@ -1,10 +1,10 @@
-package net.debreczeni.food.delivery.service;
+package net.debreczeni.food.delivery.db.service;
 
+import net.debreczeni.food.delivery.db.repository.OrderRepository;
 import net.debreczeni.food.delivery.dto.OrderDTO;
 import net.debreczeni.food.delivery.model.Item;
 import net.debreczeni.food.delivery.model.Order;
 import net.debreczeni.food.delivery.model.PaymentType;
-import net.debreczeni.food.delivery.repository.OrderRepository;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -16,10 +16,6 @@ public class OrderService implements Service<Order> {
     private final OrderRepository orderRepository = new OrderRepository();
 
     public OrderService() {
-    }
-
-    public static OrderService getInstance() {
-        return Singleton.INSTANCE;
     }
 
     public static OrderDTO toDTO(Order cart) {
@@ -111,9 +107,5 @@ public class OrderService implements Service<Order> {
 
     public List<Order> findFrom(Timestamp currentStartInterval) {
         return orderRepository.findFrom(currentStartInterval).stream().map(OrderService::fromDTO).collect(Collectors.toList());
-    }
-
-    private static class Singleton {
-        private static final OrderService INSTANCE = new OrderService();
     }
 }

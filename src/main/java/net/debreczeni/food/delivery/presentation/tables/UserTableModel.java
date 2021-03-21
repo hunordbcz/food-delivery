@@ -4,12 +4,9 @@ import net.debreczeni.food.delivery.bll.UserBLL;
 import net.debreczeni.food.delivery.model.Administrator;
 import net.debreczeni.food.delivery.model.Customer;
 import net.debreczeni.food.delivery.model.User;
-import net.debreczeni.food.delivery.service.UserService;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Supplier;
 
 public class UserTableModel extends AbstractTableModel {
     private final static int ID = 0;
@@ -20,8 +17,8 @@ public class UserTableModel extends AbstractTableModel {
     private final static int ADDRESS = 5;
     private final static int IS_LOYAL = 6;
     private final static int IS_ADMIN = 7;
-    private List<User> users;
     private final UserBLL userBLL = new UserBLL();
+    private List<User> users;
 
     public UserTableModel() {
         refresh();
