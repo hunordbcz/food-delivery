@@ -1,6 +1,6 @@
-package net.debreczeni.food.delivery.db.service;
+package net.debreczeni.food.delivery.service;
 
-import net.debreczeni.food.delivery.db.repository.OrderRepository;
+import net.debreczeni.food.delivery.repository.OrderRepository;
 import net.debreczeni.food.delivery.dto.OrderDTO;
 import net.debreczeni.food.delivery.model.Item;
 import net.debreczeni.food.delivery.model.Order;

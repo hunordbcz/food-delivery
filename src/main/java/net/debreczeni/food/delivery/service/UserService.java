@@ -1,7 +1,7 @@
-package net.debreczeni.food.delivery.db.service;
+package net.debreczeni.food.delivery.service;
 
-import net.debreczeni.food.delivery.db.repository.SQL;
-import net.debreczeni.food.delivery.db.repository.UserRepository;
+import net.debreczeni.food.delivery.repository.SQL;
+import net.debreczeni.food.delivery.repository.UserRepository;
 import net.debreczeni.food.delivery.dto.UserDTO;
 import net.debreczeni.food.delivery.model.Administrator;
 import net.debreczeni.food.delivery.model.Customer;

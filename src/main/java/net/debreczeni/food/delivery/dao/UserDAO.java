@@ -1,6 +1,6 @@
 package net.debreczeni.food.delivery.dao;
 
-import net.debreczeni.food.delivery.db.service.UserService;
+import net.debreczeni.food.delivery.service.UserService;
 import net.debreczeni.food.delivery.model.Customer;
 import net.debreczeni.food.delivery.model.User;
 

@@ -1,7 +1,7 @@
 package net.debreczeni.food.delivery.dao;
 
 import net.debreczeni.food.delivery.model.Item;
-import net.debreczeni.food.delivery.db.service.ItemService;
+import net.debreczeni.food.delivery.service.ItemService;
 
 import java.util.List;
 

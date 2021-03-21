@@ -1,4 +1,4 @@
-package net.debreczeni.food.delivery.db.repository;
+package net.debreczeni.food.delivery.repository;
 
 import net.debreczeni.food.delivery.dto.OrderDTO;
 import net.debreczeni.food.delivery.util.Pair;
@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import static net.debreczeni.food.delivery.db.repository.SQL.ORDER_TYPE.ASC;
+import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.ASC;
 
 public class OrderRepository extends AbstractRepository<OrderDTO> {
     private static final String TABLE_NAME = "orders";

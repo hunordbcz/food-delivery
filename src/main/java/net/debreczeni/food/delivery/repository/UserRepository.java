@@ -1,4 +1,4 @@
-package net.debreczeni.food.delivery.db.repository;
+package net.debreczeni.food.delivery.repository;
 
 import net.debreczeni.food.delivery.dto.UserDTO;
 

@@ -55,14 +55,6 @@ public class UserBLL {
         return userDAO.register(name, username, password, nrIdentity, cnpVal, address);
     }
 
-    public BiFunction<JFrame, User, JFrame> getHomepage(User user) {
-        if (user instanceof Administrator) {
-            return AdminFrame::new;
-        } else {
-            return CustomerFrame::new;
-        }
-    }
-
     public List<User> getAll() {
         return userDAO.findAll();
     }

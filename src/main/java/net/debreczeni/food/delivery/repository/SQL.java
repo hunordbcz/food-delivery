@@ -1,4 +1,4 @@
-package net.debreczeni.food.delivery.db.repository;
+package net.debreczeni.food.delivery.repository;
 
 import java.util.List;
 
