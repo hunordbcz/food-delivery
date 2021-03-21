@@ -7,7 +7,6 @@ import net.debreczeni.food.delivery.model.Order;
 import net.debreczeni.food.delivery.model.PaymentType;
 
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.List;
 
 public class OrderBLL {

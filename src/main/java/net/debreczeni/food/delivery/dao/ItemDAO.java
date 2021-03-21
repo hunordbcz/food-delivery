@@ -8,9 +8,8 @@ import java.util.List;
 public class ItemDAO {
     private final ItemService itemService = new ItemService();
 
-    public void addNewItem(String name, String price) {
-        Double priceVal = Double.parseDouble(price);
-        itemService.insert(new Item(name, priceVal));
+    public void addNewItem(Item item) {
+        itemService.insert(item);
     }
 
     public List<Item> getAll() {
