@@ -32,8 +32,8 @@ public class UserDAO {
         return user;
     }
 
-    public List<User> getAll() {
-        return userService.getAll();
+    public List<User> findAll() {
+        return userService.findAll();
     }
 
     public void update(User user) {

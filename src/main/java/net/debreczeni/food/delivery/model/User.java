@@ -4,18 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+
 @Getter
 @Setter
 @AllArgsConstructor
-public abstract class User extends HasID {
+public abstract class User implements HasID, SafeDeletable {
+    protected Integer id;
     protected String name;
     protected String username;
     protected String password;
-
-    public User(Integer id, String name, String username, String password) {
-        super(id);
-        this.name = name;
-        this.username = username;
-        this.password = password;
-    }
+    protected Boolean isDeleted;
 }

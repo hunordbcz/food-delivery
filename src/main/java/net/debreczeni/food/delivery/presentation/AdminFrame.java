@@ -1,8 +1,11 @@
 package net.debreczeni.food.delivery.presentation;
 
+import net.debreczeni.food.delivery.model.User;
+import net.debreczeni.food.delivery.presentation.tables.OrderTableModel;
 import net.debreczeni.food.delivery.presentation.tables.UserTableModel;
 import net.debreczeni.food.delivery.presentation.tables.EditableItemTableModel;
 import net.debreczeni.food.delivery.presentation.tables.ItemTableModel;
+import net.debreczeni.food.delivery.service.OrderService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +29,7 @@ public class AdminFrame extends JFrame {
     private final ItemTableModel itemTableModel;
     private final UserTableModel userTableModel;
 
-    public AdminFrame(Component relativeTo) {
+    public AdminFrame(Component relativeTo, User user) {
         this.setTitle(this.getClass().getSimpleName());
         this.setContentPane(this.dashboardPanel);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,5 +97,9 @@ public class AdminFrame extends JFrame {
             itemTableModel.refresh();
             userTableModel.refresh();
         });
+
+        final OrderService orderService = new OrderService();
+        final OrderTableModel orderTableModel = new OrderTableModel(orderService::findAll);
+        ordersTable.setModel(orderTableModel);
     }
 }

@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum PaymentType {
     CASH(0),
-    CARD(1),
-    TRANSFER(2);
+    CARD(1);
+//    TRANSFER(2);
 
     private final int code;
 
@@ -20,8 +20,8 @@ public enum PaymentType {
                 return CASH;
             case 1:
                 return CARD;
-            case 2:
-                return TRANSFER;
+//            case 2:
+//                return TRANSFER;
             default:
                 return null;
         }

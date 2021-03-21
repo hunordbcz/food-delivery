@@ -9,7 +9,7 @@ import net.debreczeni.food.delivery.presentation.CustomerFrame;
 
 import javax.swing.*;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public class UserBLL {
     private final UserDAO userDAO;
@@ -26,7 +26,7 @@ public class UserBLL {
         return userDAO.register(name, username, password, passwordConfirmation, nrIdentity, cnp, address);
     }
 
-    public Function<JFrame, JFrame> getHomepage(User user) {
+    public BiFunction<JFrame, User, JFrame> getHomepage(User user) {
         if (user instanceof Administrator) {
             return AdminFrame::new;
         } else {
@@ -35,7 +35,7 @@ public class UserBLL {
     }
 
     public List<User> getAll() {
-        return userDAO.getAll();
+        return userDAO.findAll();
     }
 
     public void update(User user) {

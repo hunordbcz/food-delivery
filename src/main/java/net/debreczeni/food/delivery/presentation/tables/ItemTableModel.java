@@ -96,4 +96,8 @@ public class ItemTableModel extends AbstractTableModel {
 
         fireTableDataChanged();
     }
+
+    public List<Item> getItems() {
+        return items;
+    }
 }

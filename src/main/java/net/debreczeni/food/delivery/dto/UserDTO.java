@@ -1,13 +1,16 @@
 package net.debreczeni.food.delivery.dto;
 
 import lombok.*;
+import net.debreczeni.food.delivery.model.HasID;
+
+import java.sql.Timestamp;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UserDTO implements HasID, SafeDeletableDTO{
     private Integer id;
     private String name;
     private String nr_identity;
@@ -17,4 +20,5 @@ public class UserDTO {
     private Boolean is_loyal;
     private String username;
     private String password;
+    private Boolean is_deleted;
 }

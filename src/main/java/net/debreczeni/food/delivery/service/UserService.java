@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UserService {
+public class UserService implements Service<User> {
     private final UserRepository userRepository = new UserRepository();
 
     public static UserService getInstance() {
@@ -23,11 +23,22 @@ public class UserService {
         return fromDTO(userRepository.findByID(id));
     }
 
-    public List<User> getAll(){
-        return userRepository.findAll().stream().map(this::fromDTO).collect(Collectors.toList());
+    @Override
+    public List<User> findAll() {
+        return findAll(false);
     }
 
-    public User findByUsernameAndPassword(String username, String password){
+    @Override
+    public List<User> findAll(boolean showDeleted) {
+        if (showDeleted) {
+            return userRepository.findAll().stream().map(this::fromDTO).collect(Collectors.toList());
+        } else {
+            return userRepository.findAll().stream().map(this::fromDTO)
+                    .filter(user -> !user.getIsDeleted()).collect(Collectors.toList());
+        }
+    }
+
+    public User findByUsernameAndPassword(String username, String password) {
         final List<Pair<String, Object>> rules = new LinkedList<>();
         rules.add(new Pair<>("username", username));
         rules.add(new Pair<>("password", password));
@@ -40,7 +51,8 @@ public class UserService {
         return null;
     }
 
-    public boolean insert(User user){
+    @Override
+    public boolean insert(User user) {
         return userRepository.insert(toDTO(user));
     }
 
@@ -53,6 +65,7 @@ public class UserService {
                     .is_admin(true)
                     .username(administrator.getUsername())
                     .password(administrator.getPassword())
+                    .is_deleted(administrator.getIsDeleted())
                     .build();
         }
 
@@ -68,6 +81,7 @@ public class UserService {
                     .is_loyal(customer.getIsLoyal())
                     .username(customer.getUsername())
                     .password(customer.getPassword())
+                    .is_deleted(customer.getIsDeleted())
                     .build();
         }
 
@@ -80,7 +94,8 @@ public class UserService {
                     user.getId(),
                     user.getName(),
                     user.getUsername(),
-                    user.getPassword()
+                    user.getPassword(),
+                    user.getIs_deleted()
             );
         }
 
@@ -92,19 +107,31 @@ public class UserService {
                 user.getNr_identity(),
                 user.getCnp(),
                 user.getAddress(),
-                user.getIs_loyal()
+                user.getIs_loyal(),
+                user.getIs_deleted()
         );
     }
 
-    public void update(User user) {
-        if(user.getId() == null){
+    @Override
+    public boolean update(User user) {
+        if (user.getId() == null) {
             throw new UnsupportedOperationException("Can't update object without primary key");
         }
-        userRepository.update(toDTO(user));
+        return userRepository.update(toDTO(user));
     }
 
-    public void delete(User user) {
-        userRepository.delete(toDTO(user));
+    @Override
+    public boolean delete(User user) {
+        return delete(user, true);
+    }
+
+    public boolean delete(User user, boolean softDelete){
+        return softDelete ? softDelete(user) : userRepository.delete(toDTO(user));
+    }
+
+    @Override
+    public boolean softDelete(User user) {
+        return userRepository.softDelete(toDTO(user));
     }
 
     private static class Singleton {

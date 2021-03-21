@@ -1,5 +1,6 @@
 package net.debreczeni.food.delivery.repository;
 
+import net.debreczeni.food.delivery.model.HasID;
 import net.debreczeni.food.delivery.util.ConnectionFactory;
 import net.debreczeni.food.delivery.util.Pair;
 
@@ -9,15 +10,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static java.lang.reflect.Modifier.isStatic;
 import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.ASC;
 import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.DESC;
 
@@ -27,7 +26,7 @@ import static net.debreczeni.food.delivery.repository.SQL.ORDER_TYPE.DESC;
  *
  * @param <T> Defines the current type
  */
-abstract class AbstractRepository<T> {
+abstract class AbstractRepository<T extends HasID> implements Repository<T> {
     protected static final Logger LOGGER = Logger.getLogger(AbstractRepository.class.getName());
 
     private final List<String> fieldNames;
@@ -47,7 +46,10 @@ abstract class AbstractRepository<T> {
      * @return List of Strings that contains the names
      */
     private List<String> getDeclaredFields() {
-        return Arrays.stream(type.getDeclaredFields()).map(Field::getName).collect(Collectors.toList());
+        return Arrays.stream(type.getDeclaredFields())
+                .filter(field -> !isStatic(field.getModifiers()))
+                .map(Field::getName)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -60,7 +62,7 @@ abstract class AbstractRepository<T> {
     private List<Object> getFieldValues(T t, SQL.STATEMENT_TYPE sqlType) throws IllegalAccessException {
         List<Object> fieldValues = new LinkedList<>();
         for (Field field : type.getDeclaredFields()) {
-            if (sqlType == SQL.STATEMENT_TYPE.INSERT && field.getName().equals("id")) {
+            if (sqlType == SQL.STATEMENT_TYPE.INSERT && field.getName().equals("id") || isStatic(field.getModifiers())) {
                 continue;
             }
 
@@ -95,7 +97,12 @@ abstract class AbstractRepository<T> {
 
             if (values != null) {
                 for (int i = 0; i < values.size(); i++) {
-                    statement.setObject(i + 1, values.get(i));
+                    final Object value = values.get(i);
+                    if (value == null) {
+                        statement.setNull(i + 1, Types.OTHER);
+                    } else {
+                        statement.setObject(i + 1, value);
+                    }
                 }
             }
 
@@ -210,16 +217,9 @@ abstract class AbstractRepository<T> {
         return sendUpdate(query, referenceValues) != 0;
     }
 
-    public Boolean delete(T t){
-        List<Object> referenceValues = null;
-        try {
-            referenceValues = getFieldValues(t, SQL.STATEMENT_TYPE.DELETE);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-        String query = queries.createDeleteQuery(fieldNames);
-        return sendUpdate(query, referenceValues) != 0;
+    public Boolean delete(T t) {
+        String query = queries.createDeleteQuery(Collections.singletonList("id"));
+        return sendUpdate(query, Collections.singletonList(t.getId())) != 0;
     }
 
     /**
@@ -278,7 +278,6 @@ abstract class AbstractRepository<T> {
     }
 
 
-
     /**
      * Creates objects from the result of a query that was made
      *
@@ -295,7 +294,7 @@ abstract class AbstractRepository<T> {
                     Object value = resultSet.getObject(fieldName);
                     PropertyDescriptor propertyDescriptor = new PropertyDescriptor(fieldName, type);
 
-                    if(value != null){
+                    if (value != null) {
                         method = type.getMethod(propertyDescriptor.getWriteMethod().getName(), value.getClass());
                         method.invoke(instance, value);
                     }

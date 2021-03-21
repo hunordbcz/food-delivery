@@ -14,7 +14,7 @@ public class ItemDAO {
     }
 
     public List<Item> getAll() {
-        return itemService.getAll();
+        return itemService.findAll();
     }
 
     public void update(Item item) {

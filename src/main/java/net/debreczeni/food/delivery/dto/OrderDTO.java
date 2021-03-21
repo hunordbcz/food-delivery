@@ -1,24 +1,25 @@
 package net.debreczeni.food.delivery.dto;
 
 import lombok.*;
+import net.debreczeni.food.delivery.model.HasID;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartDTO {
+public class OrderDTO implements HasID, SafeDeletableDTO {
     public final static int PAYMENT_CASH = 0;
     public final static int PAYMENT_CARD = 1;
-    public final static int PAYMENT_TRANSFER = 2;
 
     private Integer id;
     private String items_list;
     private Integer user_id;
-    private Date created_at;
+    private Timestamp created_at;
     private String delivery_address;
     private Boolean is_processed;
     private Integer payment_type;
+    private Boolean is_deleted;
 }

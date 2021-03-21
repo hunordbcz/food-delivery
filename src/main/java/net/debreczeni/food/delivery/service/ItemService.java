@@ -5,10 +5,9 @@ import net.debreczeni.food.delivery.model.Item;
 import net.debreczeni.food.delivery.repository.ItemRepository;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class ItemService {
+public class ItemService implements Service<Item> {
     private ItemRepository itemRepository = new ItemRepository();
 
     public ItemService() {
@@ -23,6 +22,7 @@ public class ItemService {
                 .id(item.getId())
                 .name(item.getName())
                 .price(item.getPrice())
+                .is_deleted(item.getIsDeleted())
                 .build();
     }
 
@@ -30,24 +30,53 @@ public class ItemService {
         return new Item(
                 itemDTO.getId(),
                 itemDTO.getName(),
-                itemDTO.getPrice()
+                itemDTO.getPrice(),
+                itemDTO.getIs_deleted()
         );
     }
 
-    public List<Item> getAll() {
-        return itemRepository.findAll().stream().map(ItemService::fromDTO).collect(Collectors.toList());
+    @Override
+    public List<Item> findAll() {
+        return findAll(false);
     }
 
-    public void update(Item item) {
-        itemRepository.update(toDTO(item));
+    @Override
+    public List<Item> findAll(boolean showDeleted) {
+        if (showDeleted) {
+            return itemRepository.findAll().stream().map(ItemService::fromDTO).collect(Collectors.toList());
+        } else {
+            return itemRepository.findAll().stream().map(ItemService::fromDTO)
+                    .filter(item -> !item.getIsDeleted()).collect(Collectors.toList());
+        }
     }
 
-    public void insert(Item item) {
-        itemRepository.insert(toDTO(item));
+    @Override
+    public boolean update(Item item) {
+        return itemRepository.update(toDTO(item));
     }
 
-    public void delete(Item item) {
-        itemRepository.delete(toDTO(item));
+    @Override
+    public boolean insert(Item item) {
+        return itemRepository.insert(toDTO(item));
+    }
+
+    @Override
+    public boolean delete(Item item) {
+        return delete(item, true);
+    }
+
+    public boolean delete(Item item, boolean softDelete){
+        return softDelete ? softDelete(item) : itemRepository.delete(toDTO(item));
+    }
+
+    @Override
+    public boolean softDelete(Item item) {
+        return itemRepository.softDelete(toDTO(item));
+    }
+
+    @Override
+    public Item findByID(int id) {
+        return fromDTO(itemRepository.findByID(id));
     }
 
     private static class Singleton {

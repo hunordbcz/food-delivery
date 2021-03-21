@@ -6,7 +6,6 @@ import java.util.List;
 
 public class EditableItemTableModel extends ItemTableModel {
 
-
     public EditableItemTableModel() {
         super();
     }
