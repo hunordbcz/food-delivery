@@ -86,32 +86,33 @@ abstract class AbstractRepository<T extends HasID> implements Repository<T> {
      * @param values The values that are added to the query
      * @return The number of rows changed / added
      */
-    private synchronized Integer sendUpdate(String query, List<Object> values) {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+    private Integer sendUpdate(String query, List<Object> values) {
+        synchronized(AbstractRepository.class){
+            Connection connection = null;
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+            try {
+                connection = ConnectionFactory.getConnection();
+                statement = connection.prepareStatement(query);
 
-        try {
-            connection = ConnectionFactory.getConnection();
-            statement = connection.prepareStatement(query);
-
-            if (values != null) {
-                for (int i = 0; i < values.size(); i++) {
-                    final Object value = values.get(i);
-                    if (value == null) {
-                        statement.setNull(i + 1, Types.OTHER);
-                    } else {
-                        statement.setObject(i + 1, value);
+                if (values != null) {
+                    for (int i = 0; i < values.size(); i++) {
+                        final Object value = values.get(i);
+                        if (value == null) {
+                            statement.setNull(i + 1, Types.OTHER);
+                        } else {
+                            statement.setObject(i + 1, value);
+                        }
                     }
                 }
-            }
 
-            return statement.executeUpdate();
-        } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, type.getName() + "::sendUpdate " + e.getMessage());
-        } finally {
-            ConnectionFactory.close(statement);
-            ConnectionFactory.close(connection);
+                return statement.executeUpdate();
+            } catch (SQLException e) {
+                LOGGER.log(Level.WARNING, type.getName() + "::sendUpdate " + e.getMessage());
+            } finally {
+                ConnectionFactory.close(statement);
+                ConnectionFactory.close(connection);
+            }
         }
         return 0;
     }
@@ -123,29 +124,31 @@ abstract class AbstractRepository<T extends HasID> implements Repository<T> {
      * @param values The values that are added to the query
      * @return List of parsed objects from the result of the query
      */
-    private synchronized List<T> sendQuery(String query, List<Object> values) {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-        try {
-            connection = ConnectionFactory.getConnection();
-            statement = connection.prepareStatement(query);
+    private List<T> sendQuery(String query, List<Object> values) {
+        synchronized (AbstractRepository.class){
+            Connection connection = null;
+            PreparedStatement statement = null;
+            ResultSet resultSet = null;
+            try {
+                connection = ConnectionFactory.getConnection();
+                statement = connection.prepareStatement(query);
 
-            if (values != null) {
-                for (int i = 0; i < values.size(); i++) {
-                    statement.setObject(i + 1, values.get(i));
+                if (values != null) {
+                    for (int i = 0; i < values.size(); i++) {
+                        statement.setObject(i + 1, values.get(i));
+                    }
                 }
+
+                resultSet = statement.executeQuery();
+
+                return createObjects(resultSet);
+            } catch (SQLException e) {
+                LOGGER.log(Level.WARNING, type.getName() + "::sendQuery " + e.getMessage());
+            } finally {
+                ConnectionFactory.close(resultSet);
+                ConnectionFactory.close(statement);
+                ConnectionFactory.close(connection);
             }
-
-            resultSet = statement.executeQuery();
-
-            return createObjects(resultSet);
-        } catch (SQLException e) {
-            LOGGER.log(Level.WARNING, type.getName() + "::sendQuery " + e.getMessage());
-        } finally {
-            ConnectionFactory.close(resultSet);
-            ConnectionFactory.close(statement);
-            ConnectionFactory.close(connection);
         }
         return null;
     }
